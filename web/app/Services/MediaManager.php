@@ -29,10 +29,16 @@ class MediaManager
         $extension = $file->getClientOriginalExtension();
         $directory = 'media/'.now()->format('Y/m');
         $filename = Str::uuid().'.'.$extension;
-        $path = $file->storeAs($directory, $filename, $disk);
 
-        $type = $this->resolveType($file->getMimeType() ?? '');
+        // Lire taille + mime + dimensions AVANT storeAs — storeAs peut déplacer
+        // le fichier temporaire (Livewire notamment) et rendre les lookups
+        // ultérieurs impossibles (UnableToRetrieveMetadata).
+        $mime = $file->getMimeType() ?? 'application/octet-stream';
+        $type = $this->resolveType($mime);
         [$width, $height] = $this->resolveDimensions($file, $type);
+        $size = $this->safeFileSize($file);
+
+        $path = $file->storeAs($directory, $filename, $disk);
 
         return Media::create([
             'collection_id' => $collectionId,
@@ -41,14 +47,28 @@ class MediaManager
             'disk' => $disk,
             'path' => $path,
             'original_filename' => $file->getClientOriginalName(),
-            'mime_type' => $file->getMimeType() ?? 'application/octet-stream',
-            'size_bytes' => $file->getSize() ?: 0,
+            'mime_type' => $mime,
+            'size_bytes' => $size,
             'width' => $width,
             'height' => $height,
             'alt' => $alt,
             'caption' => $caption,
             'credit' => $credit,
         ]);
+    }
+
+    private function safeFileSize(UploadedFile $file): int
+    {
+        try {
+            return (int) ($file->getSize() ?: 0);
+        } catch (\Throwable) {
+            $real = $file->getRealPath();
+            if (is_string($real) && is_readable($real)) {
+                $size = @filesize($real);
+                return is_int($size) ? $size : 0;
+            }
+            return 0;
+        }
     }
 
     public function delete(Media $media): void
