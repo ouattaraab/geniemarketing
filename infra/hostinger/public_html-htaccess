@@ -1,0 +1,58 @@
+# ==============================================================================
+# GÉNIE MARKETING Mag — .htaccess pour Hostinger Mutualisé (Apache/LiteSpeed)
+# À déposer dans public_html/.htaccess
+# ==============================================================================
+
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Redirection HTTPS (Hostinger fournit le cert Let's Encrypt via hPanel)
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # www → apex
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
+    # Routing Laravel : tout ce qui n'est pas un fichier existant → index.php
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Blocage des fichiers sensibles qui pourraient traîner
+<FilesMatch "^(\.env|\.env\.|composer\.|package\.|artisan|phpunit\.|\.git|\.htaccess~)">
+    Require all denied
+</FilesMatch>
+
+# Cache long sur les assets Vite (hashés dans le nom)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css                 "access plus 1 year"
+    ExpiresByType application/javascript   "access plus 1 year"
+    ExpiresByType image/png                "access plus 6 months"
+    ExpiresByType image/jpeg               "access plus 6 months"
+    ExpiresByType image/webp               "access plus 6 months"
+    ExpiresByType image/svg+xml            "access plus 6 months"
+    ExpiresByType font/woff2               "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Headers de base (complétés par SecurityHeaders middleware Laravel)
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Cache immuable pour les assets buildés
+    <FilesMatch "\.(css|js|png|jpg|jpeg|webp|svg|woff2|woff|ttf)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+# Compression Gzip/Brotli si dispo
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>

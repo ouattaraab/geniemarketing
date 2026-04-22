@@ -50,6 +50,7 @@ dist-ssr/
 .env
 .env.*
 !.env.example
+!.env.production.example
 .env.backup
 .env.production
 
@@ -66,3 +67,4 @@ coverage/
 *.pid
 *.seed
 *.tsbuildinfo
+/dist

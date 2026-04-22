@@ -110,7 +110,7 @@ remind-renewal: ## Envoie les rappels de renouvellement J-7
 	cd web && php artisan gm:subscriptions:remind-renewal
 
 # -----------------------------------------------------------------------------
-# Production
+# Production — Docker (VPS / serveur self-hosted)
 # -----------------------------------------------------------------------------
 .PHONY: prod-pull prod-up prod-deploy prod-logs
 prod-pull: ## Pull la dernière image Docker depuis GHCR
@@ -129,3 +129,13 @@ prod-deploy: prod-pull prod-up ## Pull + rollout app + migrations + cache
 
 prod-logs: ## Logs production en temps réel
 	$(DOCKER_PROD) logs -f --tail=100 app
+
+# -----------------------------------------------------------------------------
+# Hostinger Mutualisé
+# -----------------------------------------------------------------------------
+.PHONY: hostinger-build hostinger-clean
+hostinger-build: ## Build les 2 zips à uploader sur Hostinger (dist/hostinger/)
+	./scripts/build-for-hostinger.sh
+
+hostinger-clean: ## Purge dist/hostinger/
+	rm -rf dist/hostinger
