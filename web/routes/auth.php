@@ -56,4 +56,15 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    // Déconnexion par GET pour éviter l'erreur 405 quand un lien dégrade en
+    // navigation classique (JS off, clic milieu, partage, bookmark, etc.).
+    // Idempotente : si la session est déjà déconnectée, redirige simplement.
+    Route::get('logout', function (\Illuminate\Http\Request $request) {
+        \Illuminate\Support\Facades\Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('status', 'Vous êtes déconnecté. À bientôt !');
+    })->name('logout.get');
 });
