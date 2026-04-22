@@ -38,56 +38,66 @@
                     fn () => \App\Models\Comment::where('status', 'pending')->count(),
                 );
 
+                // Rôles autorisés par item. En accord avec :
+                // - Livewire composants admin (Comments, Orders, Subscribers, Users, Audit, Settings)
+                // - Le seeder RolesSeeder.
+                // Omis = tous les rôles BO.
                 $sections = [
                     'Édition' => [
-                        ['Articles', 'admin.articles.index', '📝', null],
-                        ['Médias', 'admin.media.index', '🖼️', null],
-                        ['Taxonomies', 'admin.taxonomies.index', '🏷️', null],
-                        ['Magazines', 'admin.issues.index', '📰', null],
-                        ['Commentaires', 'admin.comments.index', '💬', $pendingComments > 0 ? $pendingComments : null],
+                        ['Articles', 'admin.articles.index', '📝', null, null],
+                        ['Médias', 'admin.media.index', '🖼️', null, null],
+                        ['Taxonomies', 'admin.taxonomies.index', '🏷️', null, null],
+                        ['Magazines', 'admin.issues.index', '📰', null, null],
+                        ['Commentaires', 'admin.comments.index', '💬', $pendingComments > 0 ? $pendingComments : null, ['chef', 'edit', 'adm', 'sup']],
                     ],
                     'Commercial' => [
-                        ['Abonnés', 'admin.subscribers.index', '👥', null],
-                        ['Commandes', 'admin.orders.index', '🧾', null],
-                        ['Newsletter', 'admin.newsletters.index', '📬', null],
+                        ['Abonnés', 'admin.subscribers.index', '👥', null, ['com', 'adm', 'sup']],
+                        ['Commandes', 'admin.orders.index', '🧾', null, ['com', 'adm', 'sup']],
+                        ['Newsletter', 'admin.newsletters.index', '📬', null, ['com', 'adm', 'sup']],
                     ],
                     'Système' => [
-                        ['Utilisateurs', 'admin.users.index', '👤', null],
-                        ['Audit', 'admin.audit.index', '📋', null],
-                        ['Paramètres', 'admin.settings.index', '⚙️', null],
+                        ['Utilisateurs', 'admin.users.index', '👤', null, ['adm', 'sup']],
+                        ['Audit', 'admin.audit.index', '📋', null, ['adm', 'sup']],
+                        ['Paramètres', 'admin.settings.index', '⚙️', null, ['adm', 'sup']],
                     ],
                 ];
+
+                $currentUser = auth()->user();
+                $canSee = fn (?array $roles) => $roles === null || ($currentUser?->hasAnyRole($roles) ?? false);
             @endphp
 
             @foreach ($sections as $sectionName => $items)
-                <div class="mb-6">
-                    <h3 class="mb-2 px-6 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-gm-gray">
-                        {{ $sectionName }}
-                    </h3>
-                    <ul>
-                        @foreach ($items as [$label, $routeName, $icon, $badge])
-                            @php
-                                $active = \Illuminate\Support\Facades\Route::has($routeName) && request()->routeIs($routeName . '*');
-                                $href = \Illuminate\Support\Facades\Route::has($routeName) ? route($routeName) : '#';
-                            @endphp
-                            <li>
-                                <a
-                                    href="{{ $href }}"
-                                    class="flex items-center gap-3 border-l-2 px-6 py-2.5 text-sm transition-colors
-                                        {{ $active ? 'border-gm-red bg-gm-red-soft font-bold text-gm-red' : 'border-transparent text-gm-charcoal hover:bg-gm-paper hover:text-gm-ink' }}"
-                                >
-                                    <span class="text-base">{{ $icon }}</span>
-                                    <span class="flex-1">{{ $label }}</span>
-                                    @if ($badge !== null)
-                                        <span class="inline-flex min-w-[1.5rem] items-center justify-center rounded-full bg-gm-red px-1.5 text-[10px] font-bold text-white">
-                                            {{ $badge }}
-                                        </span>
-                                    @endif
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
+                @php $visibleItems = collect($items)->filter(fn ($i) => $canSee($i[4] ?? null)); @endphp
+                @if ($visibleItems->isNotEmpty())
+                    <div class="mb-6">
+                        <h3 class="mb-2 px-6 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-gm-gray">
+                            {{ $sectionName }}
+                        </h3>
+                        <ul>
+                            @foreach ($visibleItems as [$label, $routeName, $icon, $badge])
+                                @php
+                                    $active = \Illuminate\Support\Facades\Route::has($routeName) && request()->routeIs($routeName . '*');
+                                    $href = \Illuminate\Support\Facades\Route::has($routeName) ? route($routeName) : '#';
+                                @endphp
+                                <li>
+                                    <a
+                                        href="{{ $href }}"
+                                        class="flex items-center gap-3 border-l-2 px-6 py-2.5 text-sm transition-colors
+                                            {{ $active ? 'border-gm-red bg-gm-red-soft font-bold text-gm-red' : 'border-transparent text-gm-charcoal hover:bg-gm-paper hover:text-gm-ink' }}"
+                                    >
+                                        <span class="text-base">{{ $icon }}</span>
+                                        <span class="flex-1">{{ $label }}</span>
+                                        @if ($badge !== null)
+                                            <span class="inline-flex min-w-[1.5rem] items-center justify-center rounded-full bg-gm-red px-1.5 text-[10px] font-bold text-white">
+                                                {{ $badge }}
+                                            </span>
+                                        @endif
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
             @endforeach
         </nav>
 
