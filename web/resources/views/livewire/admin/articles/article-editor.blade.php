@@ -215,7 +215,7 @@
                         @php $checked = in_array($tag->id, $selectedTagIds); @endphp
                         <button
                             type="button"
-                            wire:click="$toggle.in('selectedTagIds', {{ $tag->id }})"
+                            wire:click="toggleTag({{ $tag->id }})"
                             class="gm-meta border px-2 py-1 transition
                                 {{ $checked ? 'border-gm-red bg-gm-red-soft text-gm-red-deep' : 'border-gm-gray-line text-gm-charcoal hover:border-gm-red' }}"
                         >

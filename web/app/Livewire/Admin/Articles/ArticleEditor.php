@@ -122,6 +122,26 @@ class ArticleEditor extends Component
         $this->coverCredit = '';
     }
 
+    public function toggleTag(int $tagId): void
+    {
+        $index = array_search($tagId, $this->selectedTagIds, true);
+        if ($index === false) {
+            $this->selectedTagIds[] = $tagId;
+        } else {
+            array_splice($this->selectedTagIds, $index, 1);
+        }
+    }
+
+    public function toggleAuthor(int $authorId): void
+    {
+        $index = array_search($authorId, $this->selectedAuthorIds, true);
+        if ($index === false) {
+            $this->selectedAuthorIds[] = $authorId;
+        } else {
+            array_splice($this->selectedAuthorIds, $index, 1);
+        }
+    }
+
     #[Computed]
     public function coverPreviewUrl(): ?string
     {

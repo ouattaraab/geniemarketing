@@ -90,7 +90,23 @@
             import Underline from '@tiptap/extension-underline';
             import Placeholder from '@tiptap/extension-placeholder';
 
-            window.gmRichEditor = function({ model, placeholder }) {
+            // Enregistre gmRichEditor comme data() Alpine AVANT qu'Alpine n'évalue
+            // les `x-data` de la page. Les modules ES étant différés par défaut,
+            // on passe par l'event alpine:init émis par Livewire/Alpine pour
+            // garantir le bon ordre.
+            const defineGmRichEditor = () => {
+                window.Alpine.data('gmRichEditor', gmRichEditorFactory);
+            };
+            if (window.Alpine) {
+                defineGmRichEditor();
+            } else {
+                document.addEventListener('alpine:init', defineGmRichEditor);
+            }
+
+            // Expose aussi en global pour rester compatible avec x-data="gmRichEditor(...)"
+            window.gmRichEditor = gmRichEditorFactory;
+
+            function gmRichEditorFactory({ model, placeholder }) {
                 return {
                     editor: null,
                     content: model,
@@ -152,7 +168,7 @@
                             .run();
                     },
                 };
-            };
+            }
         </script>
         <style>
             .gm-rich-editor-content p.is-editor-empty:first-child::before {
