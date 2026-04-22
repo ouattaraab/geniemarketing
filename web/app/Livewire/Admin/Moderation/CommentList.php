@@ -7,6 +7,7 @@ namespace App\Livewire\Admin\Moderation;
 use App\Models\Comment;
 use Illuminate\Contracts\View\View;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -47,6 +48,7 @@ class CommentList extends Component
             'moderated_by_user_id' => auth()->id(),
             'moderated_at' => now(),
         ]);
+        Cache::forget('admin.comments.pending_count');
         session()->flash('status', 'Commentaire approuvé.');
     }
 
@@ -58,6 +60,7 @@ class CommentList extends Component
             'moderated_by_user_id' => auth()->id(),
             'moderated_at' => now(),
         ]);
+        Cache::forget('admin.comments.pending_count');
         session()->flash('status', 'Commentaire rejeté.');
     }
 

@@ -8,6 +8,7 @@ use App\Models\Article;
 use App\Models\Comment;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -61,6 +62,9 @@ class CommentSection extends Component
             'status' => 'pending',       // modération systématique
             'ip' => request()->ip(),
         ]);
+
+        // Rafraîchit le badge sidebar côté BO
+        Cache::forget('admin.comments.pending_count');
 
         $this->newComment = '';
         session()->flash('comment-status', 'Votre commentaire est en attente de modération. Merci de votre contribution.');
