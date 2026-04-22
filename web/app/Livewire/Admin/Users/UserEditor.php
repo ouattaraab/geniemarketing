@@ -76,13 +76,24 @@ class UserEditor extends Component
             $this->user = User::create($data);
             $this->user->assignRole($validated['role']);
 
-            // Envoi d'un lien de définition du mot de passe
-            Password::sendResetLink(['email' => $this->user->email]);
+            // Envoi d'un lien de définition du mot de passe — ne doit pas
+            // casser la création si le transport mail est indispo.
+            $mailSent = false;
+            try {
+                Password::sendResetLink(['email' => $this->user->email]);
+                $mailSent = true;
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('UserEditor: activation mail failed', [
+                    'user_id' => $this->user->id,
+                    'email' => $this->user->email,
+                    'error' => $e->getMessage(),
+                ]);
+            }
 
-            session()->flash('status', sprintf(
-                'Compte créé. Un email d\'activation a été envoyé à %s.',
-                $this->user->email,
-            ));
+            session()->flash('status', $mailSent
+                ? sprintf('Compte créé. Un email d\'activation a été envoyé à %s.', $this->user->email)
+                : sprintf('Compte créé — l\'envoi du mail d\'activation a échoué (vérifiez la config SMTP). Renvoyez-le manuellement à %s.', $this->user->email),
+            );
         }
 
         $this->redirectRoute('admin.users.edit', ['user' => $this->user], navigate: true);
