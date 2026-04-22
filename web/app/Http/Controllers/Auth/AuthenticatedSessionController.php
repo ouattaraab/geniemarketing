@@ -28,7 +28,30 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended($this->landingPathFor($request->user()));
+    }
+
+    /**
+     * Route par défaut après login, selon le profil utilisateur :
+     *   - rôles backoffice       → /admin
+     *   - abonné (type subscriber) → /compte
+     *   - sinon                   → /
+     */
+    private function landingPathFor(?\App\Models\User $user): string
+    {
+        if ($user === null) {
+            return route('home', absolute: false);
+        }
+
+        if ($user->hasAnyRole(['red', 'chef', 'edit', 'adm', 'sup'])) {
+            return route('admin.dashboard', absolute: false);
+        }
+
+        if ($user->type === 'subscriber') {
+            return route('account', absolute: false);
+        }
+
+        return route('home', absolute: false);
     }
 
     /**

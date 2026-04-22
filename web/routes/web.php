@@ -95,7 +95,17 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/compte', \App\Http\Controllers\Public\AccountController::class)->name('account');
     Route::get('/compte/factures/{invoice:number}/pdf', [\App\Http\Controllers\Public\InvoiceController::class, 'download'])
         ->name('account.invoice.download');
-    Route::get('/dashboard', fn () => view('dashboard'))->middleware('verified')->name('dashboard');
+    // Redirection intelligente — aiguille chaque profil vers son espace.
+    Route::get('/dashboard', function () {
+        $user = auth()->user();
+        if ($user?->hasAnyRole(['red', 'chef', 'edit', 'adm', 'sup'])) {
+            return redirect()->route('admin.dashboard');
+        }
+        if ($user?->type === 'subscriber') {
+            return redirect()->route('account');
+        }
+        return redirect()->route('home');
+    })->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
