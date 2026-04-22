@@ -113,7 +113,8 @@ Route::middleware('auth')->group(function (): void {
 
     // 2FA (US-006)
     Route::get('/2fa/setup', [\App\Http\Controllers\Auth\TwoFactorController::class, 'setup'])->name('2fa.setup');
-    Route::post('/2fa/setup', [\App\Http\Controllers\Auth\TwoFactorController::class, 'enable'])->name('2fa.enable');
+    Route::post('/2fa/setup', [\App\Http\Controllers\Auth\TwoFactorController::class, 'enable'])
+        ->middleware('throttle:5,1')->name('2fa.enable');
     Route::get('/2fa/challenge', [\App\Http\Controllers\Auth\TwoFactorController::class, 'challenge'])->name('2fa.challenge');
     Route::post('/2fa/challenge', [\App\Http\Controllers\Auth\TwoFactorController::class, 'verify'])
         ->middleware('throttle:5,1')->name('2fa.verify');

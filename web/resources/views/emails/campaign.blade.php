@@ -30,11 +30,17 @@
         </div>
         <div class="body">
             <h2>{{ $campaign->subject }}</h2>
-            {!! \Illuminate\Support\Str::markdown($campaign->content) !!}
+            {{-- html_input=strip empêche un opérateur BO d'injecter <script>/<img onerror> --}}
+            {!! \Illuminate\Support\Str::markdown($campaign->content, ['html_input' => 'strip', 'allow_unsafe_links' => false]) !!}
 
-            @if ($campaign->cta_label && $campaign->cta_url)
+            @php
+                // Whitelist du schéma CTA pour ne pas rendre de lien javascript:/vbscript:/data:.
+                $ctaUrl = $campaign->cta_url;
+                $ctaSafe = is_string($ctaUrl) && preg_match('~^https?://~i', $ctaUrl) ? $ctaUrl : null;
+            @endphp
+            @if ($campaign->cta_label && $ctaSafe)
                 <p style="text-align:center;">
-                    <a href="{{ $campaign->cta_url }}" class="cta">{{ $campaign->cta_label }}</a>
+                    <a href="{{ $ctaSafe }}" class="cta">{{ $campaign->cta_label }}</a>
                 </p>
             @endif
         </div>

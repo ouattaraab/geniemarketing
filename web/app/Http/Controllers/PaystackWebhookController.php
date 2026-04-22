@@ -43,9 +43,16 @@ class PaystackWebhookController extends Controller
 
         $order = Order::where('reference', $payload->reference)->first();
         if ($order === null) {
-            Log::warning('Paystack webhook: order not found', ['ref' => $payload->reference]);
+            // Webhook pour une référence inconnue : potentiel réplay, fuite de
+            // clé ou bug côté Paystack. On alerte en critical (Sentry doit
+            // remonter) mais on répond 202 Accepted pour éviter le retry loop.
+            Log::critical('Paystack webhook: order not found', [
+                'ref' => $payload->reference,
+                'event' => $payload->event,
+                'ip' => $request->ip(),
+            ]);
 
-            return response()->json(['ok' => true]); // 200 pour éviter les retries excessifs
+            return response()->json(['ok' => true, 'msg' => 'order not found'], 202);
         }
 
         match ($payload->event) {

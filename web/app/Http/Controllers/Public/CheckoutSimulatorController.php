@@ -61,6 +61,11 @@ class CheckoutSimulatorController extends Controller
             return $default;
         }
 
+        // Schéma whitelisté pour éviter javascript://host/…%0aalert(1).
+        if (! in_array($parsed['scheme'] ?? '', ['http', 'https'], true)) {
+            return $default;
+        }
+
         if ($parsed['host'] !== request()->getHost()) {
             return $default;
         }

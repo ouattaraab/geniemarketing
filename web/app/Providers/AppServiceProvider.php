@@ -8,6 +8,7 @@ use App\Listeners\AuditAuthEvents;
 use App\Services\FreemiumCounter;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,5 +26,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Event::subscribe(AuditAuthEvents::class);
+
+        // Force HTTPS en production — nécessaire derrière un proxy terminé en
+        // TLS (Cloudflare/Nginx) pour que les URLs générées par route() /
+        // url() utilisent bien `https://`, et que les cookies secure tiennent.
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }

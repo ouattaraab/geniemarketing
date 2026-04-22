@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Middleware\AddPublicCacheHeaders;
 use App\Http\Middleware\EnsureBackofficeUser;
 use App\Http\Middleware\RequireTwoFactor;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\VerifyPaystackWebhookIp;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -48,6 +49,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Cache HTTP court sur les GET publics anonymes (CDN-friendly).
         $middleware->appendToGroup('web', AddPublicCacheHeaders::class);
+
+        // Headers de sécurité (HSTS, X-Content-Type-Options, CSP Report-Only…).
+        $middleware->appendToGroup('web', SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

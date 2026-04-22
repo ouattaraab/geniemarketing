@@ -64,7 +64,7 @@ class CampaignEditor extends Component
             'preheader' => ['nullable', 'string', 'max:255'],
             'content' => ['required', 'string', 'min:20'],
             'ctaLabel' => ['nullable', 'string', 'max:60'],
-            'ctaUrl' => ['nullable', 'url', 'max:500'],
+            'ctaUrl' => ['nullable', 'url:http,https', 'max:500'],
         ]);
 
         $data = [

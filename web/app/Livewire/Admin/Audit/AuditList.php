@@ -53,19 +53,34 @@ class AuditList extends Component
 
             AuditLog::query()->with('user')->orderByDesc('id')->chunk(500, function ($logs) use ($handle): void {
                 foreach ($logs as $log) {
-                    fputcsv($handle, [
-                        $log->created_at?->format('Y-m-d H:i:s'),
-                        $log->user?->email ?? '—',
-                        $log->action,
-                        $log->object_type ? class_basename($log->object_type).'#'.$log->object_id : '—',
-                        $log->ip ?? '—',
-                        $log->changes ? json_encode($log->changes) : '',
-                    ]);
+                    fputcsv($handle, array_map(
+                        [$this, 'neutraliseCsvFormula'],
+                        [
+                            $log->created_at?->format('Y-m-d H:i:s'),
+                            $log->user?->email ?? '—',
+                            $log->action,
+                            $log->object_type ? class_basename($log->object_type).'#'.$log->object_id : '—',
+                            $log->ip ?? '—',
+                            $log->changes ? json_encode($log->changes, JSON_UNESCAPED_UNICODE) : '',
+                        ]
+                    ));
                 }
             });
 
             fclose($handle);
         }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    /**
+     * Préfixe les champs qui commencent par =, +, -, @, tab ou CR d'une
+     * simple quote pour neutraliser les formules Excel/LibreOffice/Numbers
+     * (CSV injection / DDE attack). Les valeurs non-dangereuses sont
+     * conservées telles quelles.
+     */
+    private function neutraliseCsvFormula(mixed $value): string
+    {
+        $str = (string) ($value ?? '');
+        return preg_match("/^[=+\-@\t\r]/", $str) ? "'".$str : $str;
     }
 
     public function logs(): LengthAwarePaginator
