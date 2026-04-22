@@ -49,12 +49,9 @@
                         @endforeach
                     </ul>
 
-                    <form method="POST" action="{{ route('checkout.start', $plan) }}" class="mt-auto">
-                        @csrf
-                        <button type="submit" class="gm-btn-primary w-full">
-                            Choisir cette formule
-                        </button>
-                    </form>
+                    <a href="{{ route('checkout.form', $plan) }}" class="gm-btn-primary mt-auto w-full text-center block">
+                        Choisir cette formule
+                    </a>
                 </div>
             @endforeach
         </div>

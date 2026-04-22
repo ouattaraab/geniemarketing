@@ -8,11 +8,17 @@ use App\Contracts\PaymentGateway;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\PromoCode;
 use App\Models\SubscriptionPlan;
+use App\Models\User;
 use App\Services\Commerce\CheckoutService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rules\Password;
 
 class CheckoutController extends Controller
 {
@@ -22,26 +28,125 @@ class CheckoutController extends Controller
     ) {}
 
     /**
-     * POST /abonnement/{plan:code}/checkout
-     * Crée une Order + redirige vers le hosted checkout du gateway.
+     * GET /abonnement/{plan:code}/inscription
+     * Étape 1 du tunnel : formulaire complet avant paiement.
      */
-    public function start(Request $request, SubscriptionPlan $plan): RedirectResponse
+    public function form(Request $request, SubscriptionPlan $plan): View
+    {
+        abort_unless($plan->is_active, 404);
+
+        return view('public.checkout-form', [
+            'plan' => $plan,
+            'user' => $request->user(),
+            'isCombo' => $plan->code === 'combo',
+        ]);
+    }
+
+    /**
+     * POST /abonnement/{plan:code}/inscription
+     * Étape 2 : valide tout, crée/log le compte, prépare l'order, lance Paystack.
+     */
+    public function process(Request $request, SubscriptionPlan $plan): RedirectResponse
     {
         abort_unless($plan->is_active, 404);
 
         $user = $request->user();
-        if ($user === null) {
-            // On mémorise l'intention de checkout pour rediriger après inscription/connexion.
-            session(['checkout.plan_code' => $plan->code]);
+        $rules = [
+            'first_name' => ['required', 'string', 'max:120'],
+            'last_name' => ['required', 'string', 'max:120'],
+            'email' => ['required', 'email', 'max:255'],
+            'phone' => ['required', 'string', 'max:40'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:80'],
+            'country' => ['nullable', 'string', 'max:80'],
+            'promo_code' => ['nullable', 'string', 'max:50'],
+            'accept_terms' => ['accepted'],
+            'newsletter_opt_in' => ['nullable', 'boolean'],
+        ];
 
-            return redirect()->route('login')->with('status', 'Connectez-vous ou créez un compte pour finaliser votre abonnement.');
+        // Champs adresse de livraison obligatoires pour le Combo papier
+        if ($plan->code === 'combo') {
+            $rules['address'][0] = 'required';
+            $rules['city'][0] = 'required';
+            $rules['country'][0] = 'required';
+        }
+
+        // Création de compte si guest
+        if ($user === null) {
+            $rules['email'][] = 'unique:users,email';
+            $rules['password'] = ['required', 'confirmed', Password::defaults()];
+        }
+
+        $data = $request->validate($rules);
+
+        if ($user === null) {
+            $user = User::create([
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'email' => strtolower($data['email']),
+                'phone' => $data['phone'],
+                'password' => Hash::make($data['password']),
+                'type' => 'subscriber',
+                'status' => 'active',
+                'email_verified_at' => now(),
+            ]);
+            Auth::login($user, remember: true);
+        } else {
+            // Mise à jour des coordonnées si fournies
+            $user->fill([
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'phone' => $data['phone'],
+            ])->save();
+        }
+
+        // Code promo (facultatif)
+        $promo = null;
+        if (! empty($data['promo_code'])) {
+            $promo = PromoCode::where('code', $data['promo_code'])->first();
+            if ($promo !== null && ! $promo->isUsable($plan->code)) {
+                $promo = null;
+                return back()
+                    ->withInput()
+                    ->withErrors(['promo_code' => 'Ce code promo n\'est pas valide pour cette formule.']);
+            }
         }
 
         $order = $this->checkout->createOrderForPlan($user, $plan, $this->gateway->providerCode());
 
+        // Snapshot facturation + livraison + promo sur l'order
+        $order->update([
+            'billing_address' => array_filter([
+                'name' => $user->fullName(),
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'address' => $data['address'] ?? null,
+                'city' => $data['city'] ?? null,
+                'country' => $data['country'] ?? null,
+            ]),
+            'shipping_address' => $plan->code === 'combo' ? [
+                'name' => $user->fullName(),
+                'phone' => $user->phone,
+                'address' => $data['address'],
+                'city' => $data['city'],
+                'country' => $data['country'],
+            ] : null,
+            'promo_code_id' => $promo?->id,
+            'discount_cents' => $promo ? $promo->discountOn($order->subtotal_cents) : 0,
+            'total_cents' => $promo
+                ? $order->subtotal_cents + $order->tax_cents - $promo->discountOn($order->subtotal_cents)
+                : $order->total_cents,
+            'notes' => $data['newsletter_opt_in'] ?? false ? 'newsletter_opt_in' : null,
+        ]);
+
+        // Opt-in newsletter (hebdo-public par défaut)
+        if ($data['newsletter_opt_in'] ?? false) {
+            $this->subscribeToDefaultNewsletter($user, $request->ip());
+        }
+
         try {
             $init = $this->gateway->initialize(
-                order: $order,
+                order: $order->fresh(),
                 callbackUrl: route('checkout.callback'),
             );
         } catch (\Throwable $e) {
@@ -51,8 +156,8 @@ class CheckoutController extends Controller
             ]);
             $this->checkout->markFailed($order, [], $e->getMessage(), $this->gateway->providerCode());
 
-            return redirect()->route('subscribe')->withErrors([
-                'payment' => 'Impossible de lancer le paiement pour le moment. Merci de réessayer.',
+            return redirect()->route('checkout.form', $plan)->withErrors([
+                'payment' => 'Impossible de lancer le paiement pour le moment. Merci de réessayer dans quelques minutes.',
             ]);
         }
 
@@ -75,7 +180,6 @@ class CheckoutController extends Controller
             return redirect()->route('subscribe')->withErrors(['payment' => 'Commande introuvable.']);
         }
 
-        // Si déjà finalisée par webhook, on redirige directement
         if ($order->status === OrderStatus::Paid) {
             return redirect()->route('account')->with('status', 'Votre abonnement est actif. Bienvenue !');
         }
@@ -102,7 +206,25 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // Statut non encore résolu (ongoing) → inviter à patienter
         return redirect()->route('subscribe')->with('status', 'Votre paiement est en cours de traitement. Vous recevrez un email à confirmation.');
+    }
+
+    private function subscribeToDefaultNewsletter(User $user, ?string $ip): void
+    {
+        $list = \App\Models\Newsletter::active()->where('is_default', true)->first();
+        if ($list === null) {
+            return;
+        }
+
+        \App\Models\NewsletterSubscription::firstOrCreate(
+            ['newsletter_id' => $list->id, 'email' => $user->email],
+            [
+                'user_id' => $user->id,
+                'status' => 'confirmed',  // on a déjà validé l'email via le checkout
+                'confirmed_at' => now(),
+                'source' => 'checkout',
+                'ip' => $ip,
+            ],
+        );
     }
 }

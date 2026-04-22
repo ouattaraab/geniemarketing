@@ -64,12 +64,23 @@ Route::get('/newsletter/desinscription/{token}', [\App\Http\Controllers\Public\N
 | Paiement (Paystack)
 |--------------------------------------------------------------------------
 */
-Route::post('/abonnement/{plan:code}/checkout', [CheckoutController::class, 'start'])
+// Tunnel d'abonnement : formulaire intermédiaire → paiement Paystack
+Route::get('/abonnement/{plan:code}/inscription', [CheckoutController::class, 'form'])
+    ->name('checkout.form');
+Route::post('/abonnement/{plan:code}/inscription', [CheckoutController::class, 'process'])
     ->middleware(['throttle:10,1'])
-    ->name('checkout.start');
+    ->name('checkout.process');
 
 Route::get('/paiement/callback', [CheckoutController::class, 'callback'])
     ->name('checkout.callback');
+
+// Simulateur local : stand-in pour le hosted checkout Paystack en dev
+if (! app()->environment('production')) {
+    Route::get('/paiement/simulateur/{reference}', [\App\Http\Controllers\Public\CheckoutSimulatorController::class, 'show'])
+        ->name('checkout.simulator');
+    Route::post('/paiement/simulateur/{reference}', [\App\Http\Controllers\Public\CheckoutSimulatorController::class, 'simulate'])
+        ->name('checkout.simulator.submit');
+}
 
 Route::post('/webhooks/paystack', PaystackWebhookController::class)
     ->middleware(['throttle:60,1'])
