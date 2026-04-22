@@ -1,0 +1,11 @@
+{
+  "name": "@gm/ui-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Design tokens partagés GÉNIE MARKETING Mag (couleurs, typographies, espacements).",
+  "main": "tailwind.preset.js",
+  "files": [
+    "tokens.css",
+    "tailwind.preset.js"
+  ]
+}

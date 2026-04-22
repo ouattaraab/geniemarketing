@@ -1,0 +1,2787 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GÉNIE MARKETING Mag — Le magazine de référence du marketing ivoirien</title>
+<meta name="description" content="GÉNIE MARKETING Mag : analyses, stratégies, succès stories et décryptages du marketing made in Côte d'Ivoire." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Mulish:ital,wght@0,300;0,400;0,500;0,700;0,900;1,700;1,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<style>
+/* ==============================================================
+   GÉNIE MARKETING Mag — Template éditorial
+   Charte extraite du logo :
+     Rouge crimson #B40F1E + Charcoal #2D2D2D + Blanc
+   Typographie : Zilla Slab (italique slab — rappelle "Marketing")
+                 Mulish (italique sans — rappelle "Génie")
+   ============================================================== */
+
+:root {
+  /* ===== Couleurs issues directement du logo ===== */
+  --red: #B40F1E;
+  --red-bright: #D81B2A;
+  --red-deep: #8A0A15;
+  --red-soft: #FDECEE;
+
+  --ink: #1A1A1A;
+  --charcoal: #2D2D2D;
+  --charcoal-2: #4B4B4B;
+  --gray: #7A7A7A;
+  --gray-line: #E5E2DC;
+  --gray-soft: #F1EEE7;
+
+  --white: #FFFFFF;
+  --paper: #FAF8F4;
+  --cream: #F2EFE8;
+
+  /* ===== Typographie ===== */
+  --slab: 'Zilla Slab', 'Rockwell', Georgia, serif;
+  --sans: 'Mulish', -apple-system, system-ui, sans-serif;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Léger grain papier */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.25;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0.3 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ==============================================================
+   BANDEAU SUPÉRIEUR
+   ============================================================== */
+
+.topstrip {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 0;
+  position: relative;
+  z-index: 100;
+  border-bottom: 3px solid var(--red);
+}
+
+.topstrip-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.topstrip-left { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+.topstrip-left span { opacity: 0.75; }
+.topstrip-left .live {
+  color: #FF6B6B;
+  display: flex; align-items: center; gap: 6px;
+  opacity: 1;
+}
+.topstrip-left .live::before {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--red-bright);
+  animation: pulse 1.5s infinite;
+  box-shadow: 0 0 0 0 rgba(216, 27, 42, 0.7);
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(216, 27, 42, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(216, 27, 42, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(216, 27, 42, 0); }
+}
+
+.topstrip-right { display: flex; gap: 16px; }
+.topstrip-right a {
+  color: var(--paper);
+  opacity: 0.7;
+  text-decoration: none;
+  transition: opacity .2s;
+}
+.topstrip-right a:hover { opacity: 1; color: #FF8888; }
+
+/* ==============================================================
+   HEADER / NAVIGATION
+   ============================================================== */
+
+.header {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-line);
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+}
+
+.header-top {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 32px;
+}
+
+.header-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.header-meta .issue { color: var(--red); font-weight: 700; }
+
+.logo-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.logo-wrap img {
+  height: 72px;
+  width: auto;
+  display: block;
+}
+.logo-sub {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--charcoal-2);
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-subscribe {
+  background: var(--red);
+  color: var(--white);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 12px 22px;
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-subscribe:hover {
+  background: var(--red-bright);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(180, 15, 30, 0.3);
+}
+
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--gray-line);
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  cursor: pointer;
+  transition: all .2s;
+  color: var(--charcoal);
+}
+.icon-btn:hover { border-color: var(--red); background: var(--red); color: var(--white); }
+.icon-btn svg { width: 16px; height: 16px; }
+
+/* Menu principal */
+.nav-main {
+  border-top: 1px solid var(--gray-line);
+  background: var(--white);
+}
+.nav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  justify-content: center;
+  gap: 0;
+}
+.nav-link {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  text-decoration: none;
+  padding: 18px 28px;
+  position: relative;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: color .2s;
+}
+.nav-link:hover { color: var(--red); }
+.nav-link.active { color: var(--red); }
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 50%;
+  width: 60%; height: 3px;
+  background: var(--red);
+  transform: translateX(-50%);
+}
+.nav-link .num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--gray);
+  margin-right: 8px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+.nav-link.active .num { color: var(--red); }
+
+/* ==============================================================
+   CONTAINER & SHARED
+   ============================================================== */
+
+.container { max-width: 1400px; margin: 0 auto; padding: 0 32px; }
+.page { display: none; animation: fadeIn .5s ease; }
+.page.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Titre de section — style presse */
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  margin-bottom: 40px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--ink);
+  position: relative;
+}
+.section-heading::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 80px;
+  height: 2px;
+  background: var(--red);
+}
+.section-heading h2 {
+  font-family: var(--slab);
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(28px, 3.5vw, 44px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.section-heading .count {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-left: auto;
+}
+
+.category-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+.category-tag.dark { color: var(--charcoal); }
+
+.article-title {
+  font-family: var(--slab);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.byline {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+.byline .author { color: var(--charcoal); font-weight: 500; }
+
+/* ==============================================================
+   ACCUEIL — HERO SLIDER
+   ============================================================== */
+
+.hero {
+  padding: 48px 0 32px;
+  border-bottom: 1px solid var(--gray-line);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 48px;
+  align-items: stretch;
+}
+
+.slider {
+  position: relative;
+  aspect-ratio: 5 / 4;
+  background: var(--ink);
+  overflow: hidden;
+}
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 40px;
+  color: var(--white);
+}
+.slide.active { opacity: 1; }
+
+.slide-bg { position: absolute; inset: 0; z-index: 0; }
+.slide::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.88) 100%);
+  z-index: 1;
+}
+.slide-content { position: relative; z-index: 2; max-width: 92%; }
+
+.slide-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 16px;
+  display: inline-block;
+  padding: 7px 14px;
+  background: var(--red);
+}
+
+.slide-title {
+  font-family: var(--slab);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(28px, 3.5vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  margin-bottom: 16px;
+}
+
+.slide-excerpt {
+  font-size: 15px;
+  line-height: 1.5;
+  opacity: 0.88;
+  max-width: 520px;
+  margin-bottom: 20px;
+}
+
+.slide-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/* Fonds de slide */
+.slide-1 .slide-bg {
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(180,15,30,0.75) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 80%, rgba(45,45,45,0.4) 0%, transparent 50%),
+    linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 60%, #8A0A15 100%);
+}
+.slide-2 .slide-bg {
+  background:
+    radial-gradient(ellipse at 80% 30%, rgba(180,15,30,0.55) 0%, transparent 60%),
+    linear-gradient(225deg, #1A1A1A 0%, #2D2D2D 50%, #B40F1E 100%);
+}
+.slide-3 .slide-bg {
+  background:
+    radial-gradient(circle at 50% 60%, rgba(180,15,30,0.4) 0%, transparent 50%),
+    linear-gradient(180deg, #2D2D2D 0%, #1A1A1A 100%);
+}
+
+.slider-controls {
+  position: absolute;
+  bottom: 40px; right: 40px;
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+.slider-dot {
+  width: 28px; height: 3px;
+  background: rgba(255,255,255,0.3);
+  border: none;
+  cursor: pointer;
+  transition: background .3s;
+}
+.slider-dot.active { background: var(--white); }
+
+.slider-nav {
+  position: absolute;
+  top: 40px; right: 40px;
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+.slider-btn {
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: var(--white);
+  cursor: pointer;
+  display: grid; place-items: center;
+  transition: all .2s;
+}
+.slider-btn:hover { background: var(--red); border-color: var(--red); }
+
+/* Sidebar Top Stories */
+.hero-sidebar { display: flex; flex-direction: column; gap: 24px; }
+.hero-sidebar h3 {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--ink);
+  position: relative;
+}
+.hero-sidebar h3::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 40px; height: 2px;
+  background: var(--red);
+}
+
+.top-story {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 18px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--gray-line);
+  cursor: pointer;
+  transition: transform .2s;
+}
+.top-story:last-child { border-bottom: none; padding-bottom: 0; }
+.top-story:hover { transform: translateX(4px); }
+.top-story:hover .article-title { color: var(--red); }
+
+.top-story-num {
+  font-family: var(--slab);
+  font-size: 44px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--red);
+  line-height: 0.85;
+}
+.top-story-content .article-title {
+  font-size: 17px;
+  margin: 4px 0 6px;
+  transition: color .2s;
+}
+
+/* ==============================================================
+   FLUX D'ACTUALITÉS
+   ============================================================== */
+
+.news-flux {
+  padding: 64px 0;
+  border-bottom: 1px solid var(--gray-line);
+}
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px 36px;
+}
+
+.news-card {
+  cursor: pointer;
+  transition: transform .3s;
+}
+.news-card:hover { transform: translateY(-4px); }
+.news-card:hover .news-image { filter: saturate(1.1); }
+.news-card:hover .article-title { color: var(--red); }
+
+.news-image {
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  margin-bottom: 16px;
+  position: relative;
+  transition: filter .3s;
+}
+
+/* Visuels en "style presse" — gradients rouge/charcoal/noir */
+.news-image-1 { background: linear-gradient(135deg, #B40F1E 0%, #2D2D2D 100%); }
+.news-image-2 { background: linear-gradient(135deg, #2D2D2D 0%, #B40F1E 100%); }
+.news-image-3 { background: linear-gradient(135deg, #1A1A1A 0%, #4B4B4B 100%); }
+.news-image-4 { background: linear-gradient(135deg, #8A0A15 0%, #1A1A1A 100%); }
+.news-image-5 { background: linear-gradient(135deg, #4B4B4B 0%, #B40F1E 100%); }
+.news-image-6 { background: linear-gradient(135deg, #B40F1E 0%, #8A0A15 100%); }
+
+.news-image-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.95);
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 120px;
+  font-weight: 700;
+  opacity: 0.3;
+}
+
+.news-image-number {
+  position: absolute;
+  top: 14px; left: 14px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--white);
+  background: rgba(0,0,0,0.6);
+  padding: 5px 9px;
+  backdrop-filter: blur(10px);
+  letter-spacing: 0.1em;
+}
+
+.news-card .article-title {
+  font-size: 21px;
+  margin: 10px 0;
+  transition: color .2s;
+}
+.news-card .excerpt {
+  font-size: 14px;
+  color: var(--charcoal-2);
+  line-height: 1.55;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ==============================================================
+   CHOIX DE LA RÉDACTION
+   ============================================================== */
+
+.editor-pick {
+  padding: 80px 0;
+  background: var(--ink);
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+
+.editor-pick::before {
+  content: 'LE CHOIX DE LA RÉDACTION';
+  position: absolute;
+  top: 50%; left: -4%;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: left center;
+  font-family: var(--slab);
+  font-size: 180px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--white);
+  opacity: 0.04;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.pick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.pick-visual {
+  aspect-ratio: 4/5;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(180,15,30,0.6) 0%, transparent 55%),
+    linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.pick-visual::after {
+  content: '';
+  position: absolute;
+  inset: 20px;
+  border: 2px solid var(--red);
+  pointer-events: none;
+}
+.pick-visual-text {
+  font-family: var(--slab);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 64px;
+  color: var(--white);
+  text-align: center;
+  line-height: 1.05;
+  padding: 40px;
+}
+.pick-visual-badge {
+  position: absolute;
+  top: 40px; right: 40px;
+  background: var(--red);
+  color: var(--white);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  padding: 8px 14px;
+  text-transform: uppercase;
+  z-index: 2;
+}
+
+.pick-content .category-tag { margin-bottom: 20px; display: inline-block; color: #FF8888; }
+.pick-content .kicker {
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 20px;
+  color: var(--red-bright);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+.pick-title {
+  font-family: var(--slab);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(34px, 4vw, 54px);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+  color: var(--white);
+}
+.pick-excerpt {
+  font-size: 17px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 28px;
+  max-width: 500px;
+}
+.pick-excerpt .drop {
+  font-family: var(--slab);
+  font-weight: 700;
+  font-size: 64px;
+  float: left;
+  line-height: 0.85;
+  margin: 4px 10px 0 0;
+  color: var(--red-bright);
+}
+
+.btn-read {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--red);
+  color: var(--white);
+  text-decoration: none;
+  padding: 16px 28px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition: all .2s;
+  border: none;
+  cursor: pointer;
+}
+.btn-read:hover { background: var(--red-bright); gap: 20px; }
+.btn-read svg { width: 16px; height: 16px; }
+
+/* ==============================================================
+   NEWSLETTER CTA
+   ============================================================== */
+
+.newsletter-cta {
+  padding: 100px 0;
+  background: var(--red);
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+
+.newsletter-cta::before {
+  content: '';
+  position: absolute;
+  top: -60%; left: -20%;
+  width: 70%; height: 220%;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, transparent 60%);
+  pointer-events: none;
+}
+.newsletter-cta::after {
+  content: '';
+  position: absolute;
+  bottom: -30%; right: -10%;
+  width: 50%; height: 150%;
+  background: radial-gradient(ellipse, rgba(255,255,255,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.newsletter-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 0 32px;
+}
+
+.newsletter-eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 24px;
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.newsletter-title {
+  font-family: var(--slab);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(38px, 5vw, 68px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+.newsletter-title em {
+  font-style: italic;
+  color: var(--ink);
+  background: var(--white);
+  padding: 0 12px;
+  display: inline-block;
+}
+
+.newsletter-sub {
+  font-size: 18px;
+  opacity: 0.88;
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.55;
+}
+
+.newsletter-form {
+  display: flex;
+  max-width: 540px;
+  margin: 0 auto 24px;
+  gap: 0;
+  background: rgba(0,0,0,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+.newsletter-form input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 20px 24px;
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: 15px;
+  outline: none;
+}
+.newsletter-form input::placeholder { color: rgba(255,255,255,0.5); }
+.newsletter-form button {
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  padding: 0 36px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .2s;
+}
+.newsletter-form button:hover { background: #000; }
+
+.newsletter-note {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ==============================================================
+   PAGE HERO (commun à toutes les pages secondaires)
+   ============================================================== */
+
+.page-hero {
+  padding: 80px 0 56px;
+  border-bottom: 1px solid var(--gray-line);
+  background: var(--white);
+}
+
+.page-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 64px;
+  align-items: end;
+}
+
+.page-hero-num {
+  font-family: var(--slab);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 180px;
+  line-height: 0.8;
+  color: var(--red);
+  letter-spacing: -0.04em;
+}
+
+.page-hero h1 {
+  font-family: var(--slab);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(48px, 7vw, 92px);
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  margin-bottom: 24px;
+  color: var(--ink);
+}
+.page-hero h1 em {
+  font-style: italic;
+  color: var(--red);
+}
+.page-hero .lede {
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--charcoal-2);
+  max-width: 620px;
+}
+
+/* ==============================================================
+   PAGE ANALYSES — Études de cas
+   ============================================================== */
+
+.case-studies { padding: 80px 0; border-bottom: 1px solid var(--gray-line); }
+
+.case-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  background: transparent;
+  border: 1px solid var(--gray-line);
+  padding: 10px 18px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .2s;
+  color: var(--charcoal-2);
+}
+.filter-btn:hover { border-color: var(--red); color: var(--red); }
+.filter-btn.active { background: var(--red); color: var(--white); border-color: var(--red); }
+
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+
+.case-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--white);
+  border: 1px solid var(--gray-line);
+  min-height: 320px;
+  cursor: pointer;
+  transition: all .3s;
+  position: relative;
+}
+.case-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--red);
+  box-shadow: 0 12px 30px -10px rgba(180, 15, 30, 0.2);
+}
+
+.case-visual {
+  position: relative;
+  overflow: hidden;
+  transition: filter .3s;
+}
+
+.case-visual-1 { background: linear-gradient(135deg, #B40F1E, #D81B2A); }
+.case-visual-2 { background: linear-gradient(135deg, #2D2D2D, #B40F1E); }
+.case-visual-3 { background: linear-gradient(135deg, #1A1A1A, #4B4B4B); }
+.case-visual-4 { background: linear-gradient(225deg, #8A0A15, #1A1A1A); }
+
+.case-visual-label {
+  position: absolute;
+  top: 16px; left: 16px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+}
+.case-visual-label.success { background: var(--red); }
+
+.case-visual-big {
+  position: absolute;
+  bottom: 16px; right: 20px;
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 72px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.25);
+  line-height: 0.85;
+}
+
+.case-body { padding: 28px; display: flex; flex-direction: column; justify-content: space-between; }
+.case-body .category-tag { margin-bottom: 12px; display: inline-block; }
+.case-body .article-title { font-size: 23px; margin-bottom: 12px; line-height: 1.15; }
+.case-body .excerpt { font-size: 14px; color: var(--charcoal-2); line-height: 1.55; margin-bottom: 20px; }
+
+.case-stats {
+  display: flex;
+  gap: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gray-line);
+}
+.case-stat {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray);
+  font-weight: 500;
+}
+.case-stat strong {
+  display: block;
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--red);
+  letter-spacing: -0.01em;
+  margin-top: 4px;
+}
+
+/* Dossiers sectoriels */
+.sector-dossiers { padding: 80px 0; background: var(--gray-soft); }
+
+.sector-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.sector-card {
+  aspect-ratio: 3/4;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all .3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.sector-card:nth-child(1) { background: var(--ink); color: var(--white); }
+.sector-card:nth-child(2) { background: var(--red); color: var(--white); }
+.sector-card:nth-child(3) { background: var(--charcoal); color: var(--white); }
+.sector-card:nth-child(4) { background: var(--white); color: var(--ink); border: 1px solid var(--ink); }
+
+.sector-card:hover { transform: translateY(-8px); }
+.sector-card::after {
+  content: '';
+  position: absolute;
+  bottom: -30%; right: -30%;
+  width: 80%; height: 80%;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  transition: transform .4s;
+}
+.sector-card:nth-child(4)::after { background: rgba(180,15,30,0.08); }
+.sector-card:hover::after { transform: scale(1.3); }
+
+.sector-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+}
+.sector-title {
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.05;
+  position: relative;
+  z-index: 1;
+}
+.sector-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  position: relative;
+  z-index: 1;
+}
+.sector-card:nth-child(4) .sector-meta { color: var(--red); opacity: 1; }
+
+/* ==============================================================
+   PAGE SUCCÈS STORIES
+   ============================================================== */
+
+.page-hero.success {
+  background: var(--red);
+  color: var(--white);
+  border-bottom: none;
+}
+.page-hero.success .page-hero-num { color: var(--white); opacity: 0.9; }
+.page-hero.success h1 { color: var(--white); }
+.page-hero.success h1 em { color: var(--ink); background: var(--white); padding: 0 12px; display: inline-block; }
+.page-hero.success .lede { color: rgba(255,255,255,0.85); }
+.page-hero.success .category-tag { color: var(--white); opacity: 0.85; }
+
+.featured-interview { padding: 80px 0; border-bottom: 1px solid var(--gray-line); }
+
+.interview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.interview-portrait {
+  aspect-ratio: 4/5;
+  background:
+    radial-gradient(circle at 40% 30%, rgba(180,15,30,0.5) 0%, transparent 55%),
+    linear-gradient(180deg, #2D2D2D 0%, #1A1A1A 100%);
+  position: relative;
+  overflow: hidden;
+}
+.interview-portrait::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.5) 100%);
+}
+.interview-portrait-initials {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 180px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+}
+.interview-portrait-quote {
+  position: absolute;
+  bottom: 32px; left: 32px; right: 32px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.interview-content .category-tag { margin-bottom: 20px; display: inline-block; }
+.interview-quote {
+  font-family: var(--slab);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(26px, 2.8vw, 40px);
+  line-height: 1.18;
+  color: var(--ink);
+  margin-bottom: 32px;
+  letter-spacing: -0.01em;
+  position: relative;
+  padding-left: 32px;
+}
+.interview-quote::before {
+  content: '"';
+  position: absolute;
+  left: -8px; top: -30px;
+  font-family: var(--slab);
+  font-size: 140px;
+  font-weight: 700;
+  color: var(--red);
+  opacity: 0.4;
+  line-height: 1;
+}
+
+.interview-attribution {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 32px;
+  padding-left: 32px;
+  border-left: 3px solid var(--red);
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.interview-attribution .name {
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 22px;
+  font-weight: 700;
+}
+.interview-attribution .role {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--gray);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* Portraits */
+.portraits { padding: 80px 0; background: var(--gray-soft); border-bottom: 1px solid var(--gray-line); }
+
+.portraits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.portrait-card { cursor: pointer; transition: transform .3s; }
+.portrait-card:hover { transform: translateY(-6px); }
+.portrait-card:hover .portrait-image::after { opacity: 1; }
+
+.portrait-image {
+  aspect-ratio: 1;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.portrait-image-1 { background: linear-gradient(135deg, #B40F1E, #2D2D2D); }
+.portrait-image-2 { background: linear-gradient(135deg, #2D2D2D, #B40F1E); }
+.portrait-image-3 { background: linear-gradient(135deg, #1A1A1A, #8A0A15); }
+
+.portrait-image::before {
+  content: attr(data-initials);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 96px;
+  font-weight: 700;
+  color: var(--white);
+}
+.portrait-image::after {
+  content: 'LIRE LE PORTRAIT →';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(180, 15, 30, 0.92);
+  color: var(--white);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.portrait-card .name {
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--ink);
+}
+.portrait-card .role {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.portrait-card .excerpt {
+  font-size: 14px;
+  color: var(--charcoal-2);
+  line-height: 1.55;
+}
+
+/* Tribune libre */
+.tribune { padding: 80px 0; border-bottom: 1px solid var(--gray-line); }
+
+.tribune-list { display: flex; flex-direction: column; }
+
+.tribune-item {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 40px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--gray-line);
+  cursor: pointer;
+  transition: all .2s;
+  align-items: center;
+}
+.tribune-item:last-child { border-bottom: 2px solid var(--ink); }
+.tribune-item:hover { padding-left: 16px; }
+.tribune-item:hover .tribune-title { color: var(--red); }
+
+.tribune-num {
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--red);
+  line-height: 1;
+}
+
+.tribune-body .category-tag { margin-bottom: 8px; display: inline-block; }
+.tribune-title {
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin-bottom: 8px;
+  transition: color .2s;
+  color: var(--ink);
+}
+.tribune-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--gray);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tribune-meta .author { color: var(--charcoal); font-weight: 500; }
+
+.tribune-arrow {
+  width: 48px; height: 48px;
+  border: 1px solid var(--gray-line);
+  display: grid; place-items: center;
+  transition: all .2s;
+  color: var(--charcoal);
+}
+.tribune-item:hover .tribune-arrow { background: var(--red); border-color: var(--red); color: var(--white); }
+
+/* ==============================================================
+   PAGE BOUTIQUE
+   ============================================================== */
+
+.page-hero.shop { background: var(--cream); }
+
+.latest-issue { padding: 80px 0; border-bottom: 1px solid var(--gray-line); }
+
+.issue-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.magazine-cover {
+  aspect-ratio: 3/4;
+  background: linear-gradient(180deg, #FAF8F4 0%, #FFFFFF 100%);
+  position: relative;
+  box-shadow:
+    0 40px 60px -20px rgba(0,0,0,0.25),
+    0 20px 30px -10px rgba(0,0,0,0.15);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  transform: rotate(-2deg);
+  transition: transform .4s;
+  border-top: 8px solid var(--red);
+}
+.magazine-cover:hover { transform: rotate(0deg) scale(1.02); }
+
+.cover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--ink);
+}
+.cover-logo-img {
+  height: 48px;
+  width: auto;
+}
+.cover-issue {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--red);
+  text-align: right;
+}
+.cover-issue .num { display: block; font-size: 14px; }
+
+.cover-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+.cover-teaser {
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--red);
+  font-weight: 500;
+}
+.cover-headline {
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+.cover-headline em {
+  font-style: italic;
+  color: var(--red);
+}
+.cover-sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--gray);
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.cover-footer {
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-line);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--gray);
+  text-transform: uppercase;
+}
+.cover-footer .price { color: var(--red); font-weight: 700; }
+
+.issue-details .category-tag { margin-bottom: 20px; display: inline-block; }
+.issue-title {
+  font-family: var(--slab);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+  color: var(--ink);
+}
+.issue-desc {
+  font-size: 17px;
+  color: var(--charcoal-2);
+  line-height: 1.6;
+  margin-bottom: 32px;
+  max-width: 520px;
+}
+
+.issue-toc {
+  background: var(--white);
+  padding: 24px 28px;
+  margin-bottom: 32px;
+  border-left: 4px solid var(--red);
+  border-top: 1px solid var(--gray-line);
+  border-right: 1px solid var(--gray-line);
+  border-bottom: 1px solid var(--gray-line);
+}
+.issue-toc h4 {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+.issue-toc ul { list-style: none; }
+.issue-toc li {
+  display: flex;
+  gap: 16px;
+  padding: 10px 0;
+  font-size: 14px;
+  border-bottom: 1px solid var(--gray-line);
+}
+.issue-toc li:last-child { border-bottom: none; }
+.issue-toc li span:first-child {
+  font-family: var(--mono);
+  color: var(--red);
+  font-weight: 700;
+  min-width: 38px;
+  font-size: 12px;
+}
+
+.issue-actions { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+
+.btn-primary {
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  padding: 16px 28px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: all .2s;
+  text-decoration: none;
+}
+.btn-primary:hover {
+  background: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+.btn-primary .price {
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 16px 28px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.btn-secondary:hover { background: var(--ink); color: var(--white); }
+
+.issue-delivery {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray);
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.issue-delivery span::before {
+  content: '●';
+  color: var(--red);
+  margin-right: 8px;
+}
+
+/* Archives */
+.archives { padding: 80px 0; background: var(--gray-soft); border-bottom: 1px solid var(--gray-line); }
+
+.archives-filter {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.archives-filter-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+.archives-filter select {
+  background: var(--white);
+  border: 1px solid var(--gray-line);
+  padding: 12px 18px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--charcoal);
+}
+
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px;
+}
+
+.archive-card { cursor: pointer; transition: transform .3s; }
+.archive-card:hover { transform: translateY(-6px); }
+.archive-card:hover .archive-cover { box-shadow: 0 20px 40px -10px rgba(0,0,0,0.25); }
+
+.archive-cover {
+  aspect-ratio: 3/4;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  transition: box-shadow .3s;
+  background: var(--white);
+  border-top: 6px solid var(--red);
+  position: relative;
+}
+.archive-cover.dark { background: var(--ink); color: var(--white); }
+.archive-cover.red  { background: var(--red); color: var(--white); border-top-color: var(--ink); }
+
+.archive-cover-top {
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--red);
+  line-height: 1;
+}
+.archive-cover.dark .archive-cover-top,
+.archive-cover.red .archive-cover-top { color: var(--white); }
+
+.archive-cover-center {
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.archive-cover.dark .archive-cover-center,
+.archive-cover.red .archive-cover-center { color: var(--white); }
+
+.archive-cover-num {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  opacity: 0.7;
+  color: var(--gray);
+}
+.archive-cover.dark .archive-cover-num,
+.archive-cover.red .archive-cover-num { color: rgba(255,255,255,0.75); }
+
+.archive-info {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.archive-info .month { color: var(--ink); display: block; margin-bottom: 2px; font-weight: 700; }
+.archive-info .theme { color: var(--gray); }
+
+/* Abonnements */
+.subscriptions { padding: 80px 0; }
+
+.sub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.sub-card {
+  padding: 40px 32px;
+  border: 1px solid var(--gray-line);
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all .3s;
+}
+.sub-card:hover { border-color: var(--red); transform: translateY(-4px); }
+.sub-card.featured {
+  background: var(--ink);
+  color: var(--white);
+  border-color: var(--ink);
+}
+.sub-card.featured:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px -10px rgba(180,15,30,0.3);
+}
+
+.sub-badge {
+  position: absolute;
+  top: -12px; left: 32px;
+  background: var(--red);
+  color: var(--white);
+  padding: 6px 14px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.sub-name {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 16px;
+}
+.sub-card.featured .sub-name { color: #FF8888; }
+
+.sub-price {
+  font-family: var(--slab);
+  font-style: italic;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.sub-card.featured .sub-price { color: var(--white); }
+.sub-price .unit {
+  font-size: 16px;
+  color: var(--gray);
+  font-family: var(--mono);
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.sub-card.featured .sub-price .unit { color: rgba(255,255,255,0.6); }
+
+.sub-period {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 32px;
+}
+.sub-card.featured .sub-period { color: rgba(255,255,255,0.55); }
+
+.sub-features {
+  list-style: none;
+  margin-bottom: 32px;
+  flex: 1;
+}
+.sub-features li {
+  padding: 12px 0;
+  font-size: 14px;
+  border-bottom: 1px solid var(--gray-line);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sub-card.featured .sub-features li { border-bottom-color: rgba(255,255,255,0.1); }
+.sub-features li::before {
+  content: '→';
+  color: var(--red);
+  font-family: var(--slab);
+  font-weight: 700;
+  font-size: 18px;
+}
+.sub-card.featured .sub-features li::before { color: #FF8888; }
+.sub-features li.muted { opacity: 0.35; text-decoration: line-through; }
+
+.sub-btn {
+  width: 100%;
+  padding: 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .2s;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+}
+.sub-btn:hover { background: var(--ink); color: var(--white); }
+.sub-card.featured .sub-btn { background: var(--red); border-color: var(--red); color: var(--white); }
+.sub-card.featured .sub-btn:hover { background: var(--white); color: var(--ink); border-color: var(--white); }
+
+/* ==============================================================
+   FOOTER
+   ============================================================== */
+
+.footer {
+  background: var(--ink);
+  color: var(--white);
+  padding: 80px 0 40px;
+  border-top: 6px solid var(--red);
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 60px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer-logo-img {
+  height: 56px;
+  width: auto;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.footer-desc {
+  font-size: 15px;
+  opacity: 0.7;
+  max-width: 340px;
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+
+.footer-social { display: flex; gap: 10px; }
+.footer-social a {
+  width: 40px; height: 40px;
+  border: 1px solid rgba(255,255,255,0.2);
+  display: grid; place-items: center;
+  color: var(--white);
+  text-decoration: none;
+  transition: all .2s;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.footer-social a:hover { background: var(--red); border-color: var(--red); }
+
+.footer-col h5 {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red-bright);
+  margin-bottom: 20px;
+}
+.footer-col ul { list-style: none; }
+.footer-col li { margin-bottom: 10px; }
+.footer-col a {
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color .2s;
+}
+.footer-col a:hover { color: var(--red-bright); }
+
+.footer-bottom {
+  padding-top: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* ==============================================================
+   RESPONSIVE
+   ============================================================== */
+
+@media (max-width: 1024px) {
+  .hero-grid, .pick-grid, .interview-grid,
+  .issue-grid, .page-hero-grid { grid-template-columns: 1fr; gap: 40px; }
+  .news-grid, .portraits-grid, .sub-grid { grid-template-columns: repeat(2, 1fr); }
+  .case-grid { grid-template-columns: 1fr; }
+  .sector-grid, .archive-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .nav-inner { overflow-x: auto; justify-content: flex-start; }
+  .header-top { grid-template-columns: 1fr; text-align: center; }
+  .header-actions, .header-meta { justify-content: center; align-items: center; }
+  .editor-pick::before { font-size: 120px; }
+}
+
+@media (max-width: 640px) {
+  .container, .topstrip-inner, .header-top, .nav-inner, .newsletter-inner { padding-left: 20px; padding-right: 20px; }
+  .news-grid, .portraits-grid, .sub-grid,
+  .sector-grid, .archive-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; }
+  .tribune-item { grid-template-columns: 50px 1fr; }
+  .tribune-arrow { display: none; }
+  .case-card { grid-template-columns: 1fr; }
+  .case-visual { aspect-ratio: 16/10; }
+  .archive-grid { grid-template-columns: repeat(2, 1fr); }
+  .topstrip-right { display: none; }
+  .newsletter-form { flex-direction: column; }
+  .newsletter-form button { padding: 18px; }
+  .section-heading { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .section-heading .count { margin-left: 0; }
+  .interview-quote::before { left: -4px; font-size: 90px; top: -18px; }
+  .logo-wrap img { height: 54px; }
+  .page-hero-num { font-size: 120px; }
+  .editor-pick::before { display: none; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- BANDEAU SUPÉRIEUR -->
+<div class="topstrip">
+  <div class="topstrip-inner">
+    <div class="topstrip-left">
+      <span class="live">Direct — Salon E-commerce Abidjan 2026</span>
+      <span>Lundi 20 avril 2026 · Abidjan 31°C ☀</span>
+    </div>
+    <div class="topstrip-right">
+      <a href="#">FR</a>
+      <a href="#">EN</a>
+      <a href="#">Se connecter</a>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-top">
+    <div class="header-meta">
+      <span class="issue">№ 042 · AVRIL 2026</span>
+      <span>Le magazine du marketing ivoirien</span>
+    </div>
+    <div class="logo-wrap" onclick="navigateTo('accueil')">
+      <img src="genie-logo.png" alt="Génie Marketing Mag" />
+      <div class="logo-sub">Décrypter · Inspirer · Transformer</div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" aria-label="Rechercher">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="7"/>
+          <line x1="21" y1="21" x2="16.5" y2="16.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button class="btn-subscribe" onclick="navigateTo('boutique')">S'abonner</button>
+    </div>
+  </div>
+  <nav class="nav-main">
+    <div class="nav-inner">
+      <button class="nav-link active" data-page="accueil"><span class="num">01</span>La Une</button>
+      <button class="nav-link" data-page="analyses"><span class="num">02</span>Analyses & Stratégies</button>
+      <button class="nav-link" data-page="succes"><span class="num">03</span>Succès Stories</button>
+      <button class="nav-link" data-page="boutique"><span class="num">04</span>Boutique</button>
+    </div>
+  </nav>
+</header>
+
+<!-- ========== PAGE ACCUEIL ========== -->
+<main id="page-accueil" class="page active">
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="slider" id="slider">
+          <div class="slide slide-1 active">
+            <div class="slide-bg"></div>
+            <div class="slide-content">
+              <span class="slide-tag">Dossier exclusif</span>
+              <h2 class="slide-title">Le marketing d'influence ivoirien franchit le cap du milliard de FCFA</h2>
+              <p class="slide-excerpt">Enquête en 6 chapitres sur l'essor fulgurant des créateurs de contenu en Côte d'Ivoire, les nouveaux rapports de force avec les marques, et les limites d'un marché encore sans régulation.</p>
+              <div class="slide-meta">Par Adjoua Kouassi · 14 min de lecture · 18 avril 2026</div>
+            </div>
+          </div>
+          <div class="slide slide-2">
+            <div class="slide-bg"></div>
+            <div class="slide-content">
+              <span class="slide-tag">Édition du mois</span>
+              <h2 class="slide-title">Les marques à l'assaut du marché CEDEAO : stratégies gagnantes</h2>
+              <p class="slide-excerpt">Comment dix champions ivoiriens ont conquis le Sénégal, le Mali et le Burkina en moins de 24 mois. Playbook, erreurs évitées, leçons à retenir.</p>
+              <div class="slide-meta">Par Kofi Mensah · 22 min · 15 avril 2026</div>
+            </div>
+          </div>
+          <div class="slide slide-3">
+            <div class="slide-bg"></div>
+            <div class="slide-content">
+              <span class="slide-tag">Grand Format</span>
+              <h2 class="slide-title">IA générative : la révolution silencieuse des agences d'Abidjan</h2>
+              <p class="slide-excerpt">Enquête exclusive sur l'adoption de Claude, ChatGPT et MidJourney dans les cinq plus grandes agences du Plateau. Productivité, craintes, nouveaux métiers.</p>
+              <div class="slide-meta">Par Yao N'Guessan · 18 min · 12 avril 2026</div>
+            </div>
+          </div>
+
+          <div class="slider-nav">
+            <button class="slider-btn" onclick="prevSlide()" aria-label="Précédent">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="slider-btn" onclick="nextSlide()" aria-label="Suivant">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+
+          <div class="slider-controls">
+            <button class="slider-dot active" data-slide="0"></button>
+            <button class="slider-dot" data-slide="1"></button>
+            <button class="slider-dot" data-slide="2"></button>
+          </div>
+        </div>
+
+        <aside class="hero-sidebar">
+          <h3>À lire également</h3>
+          <div class="top-story">
+            <div class="top-story-num">01</div>
+            <div class="top-story-content">
+              <span class="category-tag">Branding</span>
+              <h3 class="article-title">Orange CI et MTN : décryptage d'une guerre de positionnement</h3>
+              <div class="byline">Par <span class="author">Mariam Traoré</span> · 7 min</div>
+            </div>
+          </div>
+          <div class="top-story">
+            <div class="top-story-num">02</div>
+            <div class="top-story-content">
+              <span class="category-tag">Digital</span>
+              <h3 class="article-title">TikTok Ads en Côte d'Ivoire : les 5 KPIs qui comptent vraiment</h3>
+              <div class="byline">Par <span class="author">Sékou Diallo</span> · 5 min</div>
+            </div>
+          </div>
+          <div class="top-story">
+            <div class="top-story-num">03</div>
+            <div class="top-story-content">
+              <span class="category-tag">Retail</span>
+              <h3 class="article-title">La renaissance des marchés Adjamé et Cocody à l'ère du e-commerce</h3>
+              <div class="byline">Par <span class="author">Aminata Koné</span> · 9 min</div>
+            </div>
+          </div>
+          <div class="top-story">
+            <div class="top-story-num">04</div>
+            <div class="top-story-content">
+              <span class="category-tag">Sport & Marketing</span>
+              <h3 class="article-title">CAN 2027 : sponsors locaux, la course aux droits a commencé</h3>
+              <div class="byline">Par <span class="author">Jean-Luc Amon</span> · 8 min</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="news-flux">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Fil d'actualités</h2>
+        <span class="count">Mis à jour il y a 12 min · 287 articles ce mois</span>
+      </div>
+
+      <div class="news-grid">
+        <article class="news-card">
+          <div class="news-image news-image-1">
+            <span class="news-image-number">19 AVR 2026</span>
+            <span class="news-image-overlay">A</span>
+          </div>
+          <span class="category-tag">Publicité</span>
+          <h3 class="article-title">Prime Ad Awards 2026 : palmarès et analyses des campagnes primées</h3>
+          <p class="excerpt">Sept agences ivoiriennes, trois catégories inédites et une tendance de fond : le retour du storytelling long format sur les écrans publicitaires.</p>
+          <div class="byline">Par <span class="author">L. Bamba</span> · 6 min</div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-image news-image-2">
+            <span class="news-image-number">18 AVR 2026</span>
+            <span class="news-image-overlay">B</span>
+          </div>
+          <span class="category-tag">Stratégie</span>
+          <h3 class="article-title">Comment Moov Africa a reconstruit son image en 18 mois</h3>
+          <p class="excerpt">Retour sur une refonte complète d'identité, du logo à la signature, en passant par la réorganisation des agences locales.</p>
+          <div class="byline">Par <span class="author">P. Koffi</span> · 10 min</div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-image news-image-3">
+            <span class="news-image-number">17 AVR 2026</span>
+            <span class="news-image-overlay">C</span>
+          </div>
+          <span class="category-tag">Consumer Insight</span>
+          <h3 class="article-title">La génération Z ivoirienne en 12 chiffres clés</h3>
+          <p class="excerpt">Étude exclusive menée auprès de 2 400 jeunes de 18-26 ans à Abidjan, Bouaké et San-Pédro. Habitudes d'achat, médias consommés, marques préférées.</p>
+          <div class="byline">Par <span class="author">F. Doumbia</span> · 8 min</div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-image news-image-4">
+            <span class="news-image-number">16 AVR 2026</span>
+            <span class="news-image-overlay">D</span>
+          </div>
+          <span class="category-tag">Événementiel</span>
+          <h3 class="article-title">FEMUA 16 : comment Coca-Cola a réinventé son activation sur place</h3>
+          <p class="excerpt">Stand immersif, concours TikTok en temps réel, partenariats avec les artistes : décryptage d'une activation qui a battu les records d'engagement.</p>
+          <div class="byline">Par <span class="author">S. Ouattara</span> · 5 min</div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-image news-image-5">
+            <span class="news-image-number">15 AVR 2026</span>
+            <span class="news-image-overlay">E</span>
+          </div>
+          <span class="category-tag">B2B</span>
+          <h3 class="article-title">LinkedIn Côte d'Ivoire : le réseau qui change les règles du B2B</h3>
+          <p class="excerpt">Plus de 2,3 millions de profils actifs, des communautés sectorielles dynamiques et de nouvelles opportunités pour les marques qui savent y prendre la parole.</p>
+          <div class="byline">Par <span class="author">K. Gnamien</span> · 7 min</div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-image news-image-6">
+            <span class="news-image-number">14 AVR 2026</span>
+            <span class="news-image-overlay">F</span>
+          </div>
+          <span class="category-tag">Food & Beverage</span>
+          <h3 class="article-title">Ivorio, Nestlé, Solibra : guerre du packaging sur les linéaires</h3>
+          <p class="excerpt">La bataille des couleurs, des formats et des promesses produits s'intensifie dans les rayons des supermarchés abidjanais.</p>
+          <div class="byline">Par <span class="author">A. Tanoh</span> · 9 min</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="editor-pick">
+    <div class="container">
+      <div class="pick-grid">
+        <div class="pick-visual">
+          <div class="pick-visual-badge">Exclusivité</div>
+          <div class="pick-visual-text">« Le<br>consommateur<br>ivoirien a<br>changé. »</div>
+        </div>
+        <div class="pick-content">
+          <span class="category-tag">Le choix de la rédaction · Interview</span>
+          <div class="kicker">Analyse de fond</div>
+          <h2 class="pick-title">Fatou Camara : « Les marques qui gagneront en 2026 sont celles qui cesseront d'imiter l'Occident »</h2>
+          <p class="pick-excerpt">
+            <span class="drop">D</span>irectrice générale de la première agence de conseil marketing d'Abidjan, Fatou Camara dresse le portrait d'un consommateur ivoirien en pleine mutation. Selon elle, les marques panafricaines qui assument leur singularité culturelle prennent une longueur d'avance irrattrapable sur les multinationales. Entretien sans détour sur les nouveaux codes du marketing continental.
+          </p>
+          <button class="btn-read">
+            Lire l'interview complète
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="newsletter-cta">
+    <div class="newsletter-inner">
+      <div class="newsletter-eyebrow">La Newsletter hebdo</div>
+      <h2 class="newsletter-title">Chaque mardi matin, <em>l'essentiel du marketing ivoirien</em> dans votre boîte mail.</h2>
+      <p class="newsletter-sub">Analyses exclusives, chiffres clés, coulisses des campagnes et nominations sectorielles. Gratuit, sans spam, désabonnement en un clic.</p>
+      <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Merci pour votre inscription !');">
+        <input type="email" placeholder="votre@email.ci" required />
+        <button type="submit">S'inscrire</button>
+      </form>
+      <div class="newsletter-note">Rejoignez + de 8 400 professionnels abonnés</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ========== PAGE ANALYSES ========== -->
+<main id="page-analyses" class="page">
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="page-hero-grid">
+        <div class="page-hero-num">02</div>
+        <div>
+          <span class="category-tag">Rubrique</span>
+          <h1>Analyses <em>&</em> Stratégies</h1>
+          <p class="lede">Décryptages approfondis des campagnes qui ont marqué le marché ivoirien — succès éclatants, échecs constructifs, tendances sectorielles. Des études de cas méticuleuses pour comprendre ce qui fonctionne vraiment en Côte d'Ivoire.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="case-studies">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Études de cas</h2>
+        <span class="count">84 études publiées</span>
+      </div>
+
+      <div class="case-filters">
+        <button class="filter-btn active">Tous</button>
+        <button class="filter-btn">Succès</button>
+        <button class="filter-btn">Échecs constructifs</button>
+        <button class="filter-btn">B2C</button>
+        <button class="filter-btn">B2B</button>
+        <button class="filter-btn">Digital</button>
+        <button class="filter-btn">OOH</button>
+      </div>
+
+      <div class="case-grid">
+        <article class="case-card">
+          <div class="case-visual case-visual-1">
+            <span class="case-visual-label success">Succès</span>
+            <span class="case-visual-big">01</span>
+          </div>
+          <div class="case-body">
+            <div>
+              <span class="category-tag">Télécom · 2025</span>
+              <h3 class="article-title">Orange Money : la campagne « Tontine Digitale »</h3>
+              <p class="excerpt">Comment une insight culturelle locale a généré +340 000 nouveaux utilisateurs actifs en 6 mois.</p>
+            </div>
+            <div class="case-stats">
+              <div class="case-stat">ROI<strong>×4,7</strong></div>
+              <div class="case-stat">Reach<strong>8,2M</strong></div>
+              <div class="case-stat">Engagement<strong>+187%</strong></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="case-card">
+          <div class="case-visual case-visual-2">
+            <span class="case-visual-label success">Succès</span>
+            <span class="case-visual-big">02</span>
+          </div>
+          <div class="case-body">
+            <div>
+              <span class="category-tag">Agroalimentaire · 2025</span>
+              <h3 class="article-title">Solibra et la réinvention de « Flag » pour la CAN</h3>
+              <p class="excerpt">Storytelling footballistique, activations quartier par quartier : la bière qui a fédéré 14 communes.</p>
+            </div>
+            <div class="case-stats">
+              <div class="case-stat">Part de voix<strong>62%</strong></div>
+              <div class="case-stat">Brand Love<strong>+28 pts</strong></div>
+              <div class="case-stat">Ventes<strong>+41%</strong></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="case-card">
+          <div class="case-visual case-visual-3">
+            <span class="case-visual-label">Analyse</span>
+            <span class="case-visual-big">03</span>
+          </div>
+          <div class="case-body">
+            <div>
+              <span class="category-tag">Mobilité · 2025</span>
+              <h3 class="article-title">Yango vs Uber : pourquoi Yango a gagné Abidjan</h3>
+              <p class="excerpt">Analyse comparative des stratégies tarifaires, du recrutement chauffeurs et du positionnement de marque.</p>
+            </div>
+            <div class="case-stats">
+              <div class="case-stat">Parts de marché<strong>71%</strong></div>
+              <div class="case-stat">Courses/jour<strong>94K</strong></div>
+              <div class="case-stat">NPS<strong>+52</strong></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="case-card">
+          <div class="case-visual case-visual-4">
+            <span class="case-visual-label">Échec constructif</span>
+            <span class="case-visual-big">04</span>
+          </div>
+          <div class="case-body">
+            <div>
+              <span class="category-tag">Mode & Lifestyle · 2024</span>
+              <h3 class="article-title">Quand une marque de luxe a raté son entrée à Abidjan</h3>
+              <p class="excerpt">Lecture culturelle défaillante, prix mal calibrés, canaux digitaux ignorés : anatomie d'un flop à 1,2 Mds FCFA.</p>
+            </div>
+            <div class="case-stats">
+              <div class="case-stat">Taux de conv.<strong>0,3%</strong></div>
+              <div class="case-stat">Avis neg.<strong>68%</strong></div>
+              <div class="case-stat">Retrait<strong>14 mois</strong></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sector-dossiers">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Dossiers sectoriels</h2>
+        <span class="count">Mise à jour trimestrielle</span>
+      </div>
+
+      <div class="sector-grid">
+        <div class="sector-card">
+          <div class="sector-num">S01 — 48 pages</div>
+          <h3 class="sector-title">Banque & Fintech ivoiriennes</h3>
+          <div class="sector-meta">État des lieux 2026 →</div>
+        </div>
+        <div class="sector-card">
+          <div class="sector-num">S02 — 62 pages</div>
+          <h3 class="sector-title">Télécoms, data & mobile money</h3>
+          <div class="sector-meta">Tendances & acteurs →</div>
+        </div>
+        <div class="sector-card">
+          <div class="sector-num">S03 — 54 pages</div>
+          <h3 class="sector-title">Grande distribution à Abidjan</h3>
+          <div class="sector-meta">Cartographie 2026 →</div>
+        </div>
+        <div class="sector-card">
+          <div class="sector-num">S04 — 71 pages</div>
+          <h3 class="sector-title">Agriculture & AgriTech</h3>
+          <div class="sector-meta">Nouveaux modèles →</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ========== PAGE SUCCÈS ========== -->
+<main id="page-succes" class="page">
+
+  <section class="page-hero success">
+    <div class="container">
+      <div class="page-hero-grid">
+        <div class="page-hero-num">03</div>
+        <div>
+          <span class="category-tag">Rubrique</span>
+          <h1>Succès stories <em>ivoiriens</em></h1>
+          <p class="lede">Interviews, portraits, tribunes libres. À la rencontre des femmes et des hommes qui façonnent le marketing ivoirien et panafricain — leurs parcours, leurs convictions, leurs combats.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="featured-interview">
+    <div class="container">
+      <div class="section-heading">
+        <h2>L'interview du mois</h2>
+        <span class="count">Rencontre exclusive</span>
+      </div>
+
+      <div class="interview-grid">
+        <div class="interview-portrait">
+          <div class="interview-portrait-initials">FC</div>
+          <div class="interview-portrait-quote">Fatou Camara · Fondatrice de Kalem & Co.</div>
+        </div>
+        <div class="interview-content">
+          <span class="category-tag">Entretien · 24 min de lecture</span>
+          <p class="interview-quote">Nous ne vendons plus à un consommateur, nous dialoguons avec un citoyen qui sait exactement qui il est et ce qu'il refuse.</p>
+          <div class="interview-attribution">
+            <span class="name">Fatou Camara</span>
+            <span class="role">Fondatrice · Kalem & Co. Marketing Lab</span>
+          </div>
+          <button class="btn-read">
+            Lire l'entretien intégral
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="portraits">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Portraits</h2>
+        <span class="count">Série en cours · 24 portraits</span>
+      </div>
+
+      <div class="portraits-grid">
+        <article class="portrait-card">
+          <div class="portrait-image portrait-image-1" data-initials="KD"></div>
+          <span class="category-tag">Entrepreneur · Tech</span>
+          <h3 class="name">Kouadio Diallo</h3>
+          <p class="role">Fondateur · Djassa Studio</p>
+          <p class="excerpt">Comment un jeune de Yopougon a transformé un studio de contenu en agence créative de référence à Abidjan.</p>
+        </article>
+
+        <article class="portrait-card">
+          <div class="portrait-image portrait-image-2" data-initials="AK"></div>
+          <span class="category-tag">Direction · Retail</span>
+          <h3 class="name">Akissi Koffi</h3>
+          <p class="role">Directrice Marketing · PlaYce</p>
+          <p class="excerpt">Stratège du retail moderne en Afrique de l'Ouest, elle a piloté l'ouverture de 12 hypermarchés en 4 ans.</p>
+        </article>
+
+        <article class="portrait-card">
+          <div class="portrait-image portrait-image-3" data-initials="MB"></div>
+          <span class="category-tag">Créateur · Influence</span>
+          <h3 class="name">Moussa Bamba</h3>
+          <p class="role">Créateur de contenu · 2,4M abonnés</p>
+          <p class="excerpt">De la vidéo humoristique au business de la recommandation, un parcours atypique de 18 mois qui fait école.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="tribune">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Tribune libre</h2>
+        <span class="count">Paroles d'experts</span>
+      </div>
+
+      <div class="tribune-list">
+        <article class="tribune-item">
+          <div class="tribune-num">01</div>
+          <div class="tribune-body">
+            <span class="category-tag">Opinion · Digital</span>
+            <h3 class="tribune-title">« Arrêtons de copier-coller les recettes européennes sur le marché ivoirien »</h3>
+            <div class="tribune-meta">Par <span class="author">Yao N'Dri</span> · Consultant senior · 8 min</div>
+          </div>
+          <div class="tribune-arrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </article>
+
+        <article class="tribune-item">
+          <div class="tribune-num">02</div>
+          <div class="tribune-body">
+            <span class="category-tag">Opinion · Marques</span>
+            <h3 class="tribune-title">Le « Made in Côte d'Ivoire » est une promesse, pas un logo</h3>
+            <div class="tribune-meta">Par <span class="author">Awa Diabaté</span> · DG agence · 11 min</div>
+          </div>
+          <div class="tribune-arrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </article>
+
+        <article class="tribune-item">
+          <div class="tribune-num">03</div>
+          <div class="tribune-body">
+            <span class="category-tag">Opinion · Formation</span>
+            <h3 class="tribune-title">Former les marketeurs de demain : notre système éducatif a 20 ans de retard</h3>
+            <div class="tribune-meta">Par <span class="author">Dr. Ibrahim Coulibaly</span> · Universitaire · 14 min</div>
+          </div>
+          <div class="tribune-arrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </article>
+
+        <article class="tribune-item">
+          <div class="tribune-num">04</div>
+          <div class="tribune-body">
+            <span class="category-tag">Opinion · Éthique</span>
+            <h3 class="tribune-title">Marketing et influence religieuse : la frontière qu'aucune marque n'ose discuter</h3>
+            <div class="tribune-meta">Par <span class="author">Salimata Touré</span> · Sociologue des médias · 9 min</div>
+          </div>
+          <div class="tribune-arrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ========== PAGE BOUTIQUE ========== -->
+<main id="page-boutique" class="page">
+
+  <section class="page-hero shop">
+    <div class="container">
+      <div class="page-hero-grid">
+        <div class="page-hero-num">04</div>
+        <div>
+          <span class="category-tag">Rubrique</span>
+          <h1>Boutique <em>&</em> Abonnements</h1>
+          <p class="lede">Le dernier numéro, les archives complètes depuis 2022 et les formules d'abonnement — papier, numérique ou combo. Choisissez votre manière de ne rien manquer de la scène marketing ivoirienne.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="latest-issue">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Dernier numéro</h2>
+        <span class="count">Avril 2026 · En kiosque</span>
+      </div>
+
+      <div class="issue-grid">
+        <div class="magazine-cover">
+          <div class="cover-header">
+            <img src="genie-logo.png" alt="Génie Marketing" class="cover-logo-img" />
+            <div class="cover-issue">
+              N°
+              <span class="num">042</span>
+            </div>
+          </div>
+          <div class="cover-center">
+            <div class="cover-teaser">Spécial Influence</div>
+            <div class="cover-headline">Le <em>milliard</em><br/>de la créa</div>
+            <div class="cover-sub">Enquête · 72 pages</div>
+          </div>
+          <div class="cover-footer">
+            <span>Avril 2026</span>
+            <span class="price">3 500 FCFA</span>
+          </div>
+        </div>
+
+        <div class="issue-details">
+          <span class="category-tag">Numéro du mois · Avril 2026</span>
+          <h3 class="issue-title">Le milliard de la créa : enquête sur l'économie des influenceurs ivoiriens</h3>
+          <p class="issue-desc">Pour la première fois, Génie Marketing ouvre les livres de comptes du marketing d'influence en Côte d'Ivoire. Agences spécialisées, créateurs stars, marques qui investissent : qui gagne quoi, et surtout, pour combien de temps encore ?</p>
+
+          <div class="issue-toc">
+            <h4>Au sommaire de ce numéro</h4>
+            <ul>
+              <li><span>P.12</span><span>Les 20 créateurs qui font le marché — classement exclusif</span></li>
+              <li><span>P.28</span><span>Combien coûte vraiment une campagne avec un top créateur ?</span></li>
+              <li><span>P.44</span><span>Agences spécialisées : la nouvelle génération</span></li>
+              <li><span>P.58</span><span>Régulation et éthique : le débat qui vient</span></li>
+              <li><span>P.64</span><span>Portfolio · 12 campagnes à étudier en école</span></li>
+            </ul>
+          </div>
+
+          <div class="issue-actions">
+            <button class="btn-primary">
+              Commander le papier
+              <span class="price">· 3 500 F</span>
+            </button>
+            <button class="btn-secondary">
+              Version PDF · 2 000 F
+            </button>
+          </div>
+
+          <div class="issue-delivery">
+            <span>Livraison 48h Abidjan</span>
+            <span>Livraison 5 jours Côte d'Ivoire</span>
+            <span>PDF instantané</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="archives">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Archives</h2>
+        <span class="count">42 numéros depuis 2022</span>
+      </div>
+
+      <div class="archives-filter">
+        <div class="archives-filter-label">Filtrer par</div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <select><option>Année · 2026</option><option>2025</option><option>2024</option><option>2023</option><option>2022</option></select>
+          <select><option>Tous les thèmes</option><option>Influence</option><option>Stratégie</option><option>Digital</option><option>Retail</option></select>
+          <select><option>Format · Tous</option><option>Papier</option><option>PDF</option><option>Combo</option></select>
+        </div>
+      </div>
+
+      <div class="archive-grid">
+        <div class="archive-card">
+          <div class="archive-cover">
+            <div class="archive-cover-top">Génie Mag</div>
+            <div class="archive-cover-center">Spécial<br/>Retail</div>
+            <div class="archive-cover-num">N° 041 · MARS 2026</div>
+          </div>
+          <div class="archive-info">
+            <span class="month">Mars 2026</span>
+            <span class="theme">Spécial retail moderne</span>
+          </div>
+        </div>
+        <div class="archive-card">
+          <div class="archive-cover dark">
+            <div class="archive-cover-top">Génie Mag</div>
+            <div class="archive-cover-center">Digital<br/>2026</div>
+            <div class="archive-cover-num">N° 040 · FÉV 2026</div>
+          </div>
+          <div class="archive-info">
+            <span class="month">Février 2026</span>
+            <span class="theme">Panorama digital</span>
+          </div>
+        </div>
+        <div class="archive-card">
+          <div class="archive-cover red">
+            <div class="archive-cover-top">Génie Mag</div>
+            <div class="archive-cover-center">Top 50<br/>Marques</div>
+            <div class="archive-cover-num">N° 039 · JAN 2026</div>
+          </div>
+          <div class="archive-info">
+            <span class="month">Janvier 2026</span>
+            <span class="theme">Classement annuel</span>
+          </div>
+        </div>
+        <div class="archive-card">
+          <div class="archive-cover">
+            <div class="archive-cover-top">Génie Mag</div>
+            <div class="archive-cover-center">Best of<br/>2025</div>
+            <div class="archive-cover-num">N° 038 · DÉC 2025</div>
+          </div>
+          <div class="archive-info">
+            <span class="month">Décembre 2025</span>
+            <span class="theme">Rétrospective</span>
+          </div>
+        </div>
+        <div class="archive-card">
+          <div class="archive-cover dark">
+            <div class="archive-cover-top">Génie Mag</div>
+            <div class="archive-cover-center">CAN<br/>Marketing</div>
+            <div class="archive-cover-num">N° 037 · NOV 2025</div>
+          </div>
+          <div class="archive-info">
+            <span class="month">Novembre 2025</span>
+            <span class="theme">Sponsoring & sport</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="subscriptions">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Formules d'abonnement</h2>
+        <span class="count">Engagement annuel</span>
+      </div>
+
+      <div class="sub-grid">
+        <div class="sub-card">
+          <div class="sub-name">Digital</div>
+          <div class="sub-price">24<span class="unit"> 000 F</span></div>
+          <div class="sub-period">Par an · PDF uniquement</div>
+          <ul class="sub-features">
+            <li>12 numéros PDF par an</li>
+            <li>Accès intégral aux archives</li>
+            <li>Newsletter hebdomadaire premium</li>
+            <li>Études sectorielles digitales</li>
+            <li class="muted">Édition papier</li>
+            <li class="muted">Événements physiques</li>
+          </ul>
+          <button class="sub-btn">S'abonner au digital</button>
+        </div>
+
+        <div class="sub-card featured">
+          <div class="sub-badge">Meilleur choix</div>
+          <div class="sub-name">Combo</div>
+          <div class="sub-price">48<span class="unit"> 000 F</span></div>
+          <div class="sub-period">Par an · Papier + PDF</div>
+          <ul class="sub-features">
+            <li>12 numéros papier livrés</li>
+            <li>12 numéros PDF en avant-première</li>
+            <li>Accès intégral aux archives</li>
+            <li>Newsletter hebdomadaire premium</li>
+            <li>Études sectorielles complètes</li>
+            <li>2 invitations annuelles aux GM Days</li>
+          </ul>
+          <button class="sub-btn">S'abonner au combo</button>
+        </div>
+
+        <div class="sub-card">
+          <div class="sub-name">Entreprise</div>
+          <div class="sub-price">320<span class="unit"> 000 F</span></div>
+          <div class="sub-period">Par an · 10 utilisateurs</div>
+          <ul class="sub-features">
+            <li>10 licences nominatives</li>
+            <li>Accès intégral aux archives</li>
+            <li>Études sectorielles complètes</li>
+            <li>Reporting d'usage mensuel</li>
+            <li>Événements sur-mesure</li>
+            <li>Account manager dédié</li>
+          </ul>
+          <button class="sub-btn">Demander un devis</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <img src="genie-logo-white.png" alt="Génie Marketing" class="footer-logo-img" />
+        <p class="footer-desc">Le magazine de référence du marketing ivoirien et panafricain. Décrypter, inspirer, transformer depuis 2022.</p>
+        <div class="footer-social">
+          <a href="#">IG</a>
+          <a href="#">LI</a>
+          <a href="#">TW</a>
+          <a href="#">FB</a>
+          <a href="#">YT</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Rubriques</h5>
+        <ul>
+          <li><a href="#" onclick="navigateTo('accueil'); return false;">La Une</a></li>
+          <li><a href="#" onclick="navigateTo('analyses'); return false;">Analyses & Stratégies</a></li>
+          <li><a href="#" onclick="navigateTo('succes'); return false;">Succès Stories</a></li>
+          <li><a href="#" onclick="navigateTo('boutique'); return false;">Boutique</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Magazine</h5>
+        <ul>
+          <li><a href="#" onclick="navigateTo('boutique'); return false;">Dernier numéro</a></li>
+          <li><a href="#" onclick="navigateTo('boutique'); return false;">Archives</a></li>
+          <li><a href="#" onclick="navigateTo('boutique'); return false;">S'abonner</a></li>
+          <li><a href="#">Annoncer</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>À propos</h5>
+        <ul>
+          <li><a href="#">La rédaction</a></li>
+          <li><a href="#">Nous contacter</a></li>
+          <li><a href="#">Mentions légales</a></li>
+          <li><a href="#">Politique de confidentialité</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Génie Marketing Mag — Tous droits réservés · Abidjan, Côte d'Ivoire</div>
+      <div>Propulsé avec passion · ISSN 2789-XXXX</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   Navigation SPA entre les 4 pages
+   ============================================================ */
+function navigateTo(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('active');
+
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const link = document.querySelector('.nav-link[data-page="' + pageId + '"]');
+  if (link) link.classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => navigateTo(link.dataset.page));
+});
+
+/* ============================================================
+   Slider avec auto-play
+   ============================================================ */
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.slider-dot');
+
+function showSlide(i) {
+  slides.forEach(s => s.classList.remove('active'));
+  dots.forEach(d => d.classList.remove('active'));
+  slides[i].classList.add('active');
+  dots[i].classList.add('active');
+  currentSlide = i;
+}
+
+function nextSlide() { showSlide((currentSlide + 1) % slides.length); }
+function prevSlide() { showSlide((currentSlide - 1 + slides.length) % slides.length); }
+
+dots.forEach((dot, i) => dot.addEventListener('click', () => showSlide(i)));
+
+let slideInterval = setInterval(nextSlide, 7000);
+const slider = document.getElementById('slider');
+if (slider) {
+  slider.addEventListener('mouseenter', () => clearInterval(slideInterval));
+  slider.addEventListener('mouseleave', () => slideInterval = setInterval(nextSlide, 7000));
+}
+
+/* ============================================================
+   Filtres études de cas
+   ============================================================ */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

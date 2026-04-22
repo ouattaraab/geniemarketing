@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Mulish:ital,wght@0,300;0,400;0,500;0,700;0,900;1,700;1,900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==============================================================
+   GÉNIE MARKETING Mag — Design tokens (source : template v2)
+   ============================================================== */
+
+@layer base {
+    :root {
+        --gm-red: #B40F1E;
+        --gm-red-bright: #D81B2A;
+        --gm-red-deep: #8A0A15;
+        --gm-red-soft: #FDECEE;
+
+        --gm-ink: #1A1A1A;
+        --gm-charcoal: #2D2D2D;
+        --gm-charcoal-2: #4B4B4B;
+        --gm-gray: #7A7A7A;
+        --gm-gray-line: #E5E2DC;
+        --gm-gray-soft: #F1EEE7;
+
+        --gm-paper: #FAF8F4;
+        --gm-cream: #F2EFE8;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background: var(--gm-paper);
+        color: var(--gm-ink);
+        font-family: theme('fontFamily.sans');
+        font-size: 16px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Grain papier — décoration éditoriale subtile */
+    body.gm-public::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1000;
+        opacity: 0.25;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0.3 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+}
+
+@layer components {
+    /* Bouton CTA principal (s'abonner, se connecter) */
+    .gm-btn-primary {
+        @apply bg-gm-red text-white font-mono text-[11px] font-bold uppercase tracking-[0.15em] px-6 py-3 transition-all duration-200;
+    }
+    .gm-btn-primary:hover {
+        @apply bg-gm-red-bright shadow-gm-red -translate-y-px;
+    }
+
+    /* Titre de section style presse (barre noire + accent rouge) */
+    .gm-section-heading {
+        @apply relative mb-10 border-b-2 border-gm-ink pb-4;
+    }
+    .gm-section-heading::before {
+        content: '';
+        @apply absolute bottom-[-2px] left-0 h-[2px] w-20 bg-gm-red;
+    }
+    .gm-section-heading > h2 {
+        @apply font-slab italic font-bold text-gm-ink text-3xl md:text-5xl leading-none tracking-tight;
+    }
+
+    /* Métadonnée mono minuscule (dates, catégories, auteurs) */
+    .gm-meta {
+        @apply font-mono text-[11px] uppercase tracking-[0.1em] text-gm-gray;
+    }
+
+    /* Lien navigation uppercase */
+    .gm-nav-link {
+        @apply font-sans text-xs font-bold uppercase tracking-[0.15em] text-gm-charcoal hover:text-gm-red transition-colors px-7 py-5 relative;
+    }
+    .gm-nav-link.active {
+        @apply text-gm-red;
+    }
+    .gm-nav-link.active::after {
+        content: '';
+        @apply absolute bottom-[-1px] left-1/2 h-[3px] w-3/5 -translate-x-1/2 bg-gm-red;
+    }
+}

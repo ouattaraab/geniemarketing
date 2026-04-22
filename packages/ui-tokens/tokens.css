@@ -1,0 +1,74 @@
+/* ==============================================================
+   GÉNIE MARKETING Mag — Design tokens
+   Source : template/genie-marketing-v2.html
+   À importer dans web/ et admin/ via le package @gm/ui-tokens
+   ============================================================== */
+
+:root {
+  /* ===== Couleurs issues du logo ===== */
+  --gm-red: #B40F1E;
+  --gm-red-bright: #D81B2A;
+  --gm-red-deep: #8A0A15;
+  --gm-red-soft: #FDECEE;
+
+  --gm-ink: #1A1A1A;
+  --gm-charcoal: #2D2D2D;
+  --gm-charcoal-2: #4B4B4B;
+  --gm-gray: #7A7A7A;
+  --gm-gray-line: #E5E2DC;
+  --gm-gray-soft: #F1EEE7;
+
+  --gm-white: #FFFFFF;
+  --gm-paper: #FAF8F4;
+  --gm-cream: #F2EFE8;
+
+  /* ===== Typographies ===== */
+  --gm-font-slab: 'Zilla Slab', 'Rockwell', Georgia, serif;
+  --gm-font-sans: 'Mulish', -apple-system, system-ui, sans-serif;
+  --gm-font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* ===== Échelle typographique ===== */
+  --gm-text-xs: 11px;
+  --gm-text-sm: 13px;
+  --gm-text-base: 16px;
+  --gm-text-lg: 18px;
+  --gm-text-xl: 22px;
+  --gm-text-2xl: 28px;
+  --gm-text-3xl: 36px;
+  --gm-text-4xl: 44px;
+  --gm-text-5xl: 56px;
+
+  /* ===== Espacements (8px grid) ===== */
+  --gm-space-1: 4px;
+  --gm-space-2: 8px;
+  --gm-space-3: 12px;
+  --gm-space-4: 16px;
+  --gm-space-5: 24px;
+  --gm-space-6: 32px;
+  --gm-space-7: 48px;
+  --gm-space-8: 64px;
+  --gm-space-9: 96px;
+
+  /* ===== Conteneurs ===== */
+  --gm-container: 1400px;
+  --gm-container-narrow: 960px;
+  --gm-container-prose: 720px;
+
+  /* ===== Élévation / ombres ===== */
+  --gm-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --gm-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --gm-shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.12);
+  --gm-shadow-red: 0 4px 12px rgba(180, 15, 30, 0.3);
+
+  /* ===== Transitions ===== */
+  --gm-transition-fast: 0.15s ease;
+  --gm-transition-base: 0.2s ease;
+  --gm-transition-slow: 0.4s ease;
+
+  /* ===== Rayons ===== */
+  --gm-radius-none: 0;
+  --gm-radius-sm: 2px;
+  --gm-radius-md: 4px;
+  --gm-radius-lg: 8px;
+  --gm-radius-full: 9999px;
+}

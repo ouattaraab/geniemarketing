@@ -1,0 +1,12 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /compte
+Disallow: /dashboard
+Disallow: /paiement/
+Disallow: /webhooks/
+Disallow: /magazine/*/lecteur
+Disallow: /magazine/*/pdf
+Disallow: /newsletter/confirmer/
+Disallow: /newsletter/desinscription/
+
+Sitemap: https://geniemag.ci/sitemap.xml
