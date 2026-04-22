@@ -59,6 +59,6 @@
 
     <x-gm.cookie-banner />
 
-    @livewireScriptConfig
+    @livewireScripts
 </body>
 </html>

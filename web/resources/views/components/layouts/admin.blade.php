@@ -124,6 +124,6 @@
     {{-- Picker global toujours monté pour écouter "open-media-picker" depuis l'éditeur TipTap --}}
     <livewire:admin.media.media-picker />
 
-    @livewireScriptConfig
+    @livewireScripts
 </body>
 </html>

@@ -83,7 +83,7 @@ if (! app()->environment('production')) {
 }
 
 Route::post('/webhooks/paystack', PaystackWebhookController::class)
-    ->middleware(['throttle:60,1'])
+    ->middleware(['throttle:60,1', 'paystack.ip'])
     ->name('webhooks.paystack');
 
 /*

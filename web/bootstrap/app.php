@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Middleware\AddPublicCacheHeaders;
 use App\Http\Middleware\EnsureBackofficeUser;
 use App\Http\Middleware\RequireTwoFactor;
+use App\Http\Middleware\VerifyPaystackWebhookIp;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'backoffice' => EnsureBackofficeUser::class,
             '2fa' => RequireTwoFactor::class,
+            'paystack.ip' => VerifyPaystackWebhookIp::class,
         ]);
 
         // Cache HTTP court sur les GET publics anonymes (CDN-friendly).
