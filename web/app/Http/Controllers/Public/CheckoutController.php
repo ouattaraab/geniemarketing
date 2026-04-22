@@ -91,6 +91,9 @@ class CheckoutController extends Controller
                 'email_verified_at' => now(),
             ]);
             Auth::login($user, remember: true);
+            // Ceinture contre la session fixation : un attaquant ayant
+            // pré-positionné un cookie de session perdrait la main ici.
+            $request->session()->regenerate();
         } else {
             // Mise à jour des coordonnées si fournies
             $user->fill([

@@ -85,11 +85,33 @@ class CheckoutService
     public function finalizeOrder(Order $order, array $providerData, string $provider = 'paystack'): Subscription
     {
         return DB::transaction(function () use ($order, $providerData, $provider): Subscription {
-            $order->refresh();
+            // Verrou pessimiste : évite qu'un webhook et le callback
+            // user-agent finalisent la même commande en parallèle
+            // (double subscription / double invoice).
+            $order = Order::where('id', $order->id)->lockForUpdate()->firstOrFail();
 
-            // Idempotence
+            // Idempotence — déjà traité par un autre appel.
             if ($order->status === OrderStatus::Paid && $order->subscription) {
                 return $order->subscription;
+            }
+
+            // Defense-in-depth : même si la signature HMAC du webhook est
+            // valide, on vérifie que le montant et la devise retournés par
+            // Paystack correspondent EXACTEMENT à ceux de la commande.
+            // Protège contre un réplay sur une autre référence, une
+            // confusion test/prod, ou un provider compromis.
+            $receivedAmount = (int) ($providerData['amount'] ?? -1);
+            $receivedCurrency = strtoupper((string) ($providerData['currency'] ?? ''));
+            if ($receivedAmount !== $order->total_cents || $receivedCurrency !== strtoupper($order->currency)) {
+                \Illuminate\Support\Facades\Log::critical('Payment amount/currency mismatch — refusé', [
+                    'order' => $order->reference,
+                    'expected_amount_cents' => $order->total_cents,
+                    'received_amount_cents' => $receivedAmount,
+                    'expected_currency' => $order->currency,
+                    'received_currency' => $receivedCurrency,
+                    'provider' => $provider,
+                ]);
+                throw new \RuntimeException('Montant ou devise de paiement incohérent avec la commande.');
             }
 
             $payment = Payment::where('order_id', $order->id)

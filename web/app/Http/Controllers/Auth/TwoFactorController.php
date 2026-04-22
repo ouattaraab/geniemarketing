@@ -96,6 +96,8 @@ class TwoFactorController extends Controller
             ]);
         }
 
+        // Régénère l'ID session après élévation de privilège (post-2FA).
+        $request->session()->migrate(destroy: true);
         $request->session()->put('2fa_verified_at', now()->toIso8601String());
         $this->audit->log('auth.2fa.verified', $user);
 

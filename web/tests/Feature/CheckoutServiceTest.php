@@ -55,6 +55,8 @@ it('finalise : marque paid, active user, crée Subscription en trial, facture et
         'id' => 'psk_txn_1',
         'channel' => 'card',
         'reference' => $order->reference,
+        'amount' => $order->total_cents,
+        'currency' => $order->currency,
         'customer' => ['customer_code' => 'CUS_x'],
     ]);
 
@@ -75,9 +77,10 @@ it('est idempotent : double appel renvoie la même Subscription', function (): v
     Mail::fake();
 
     $order = $this->service->createOrderForPlan($this->user, $this->plan);
+    $ok = ['reference' => $order->reference, 'amount' => $order->total_cents, 'currency' => $order->currency];
 
-    $sub1 = $this->service->finalizeOrder($order, ['id' => '1', 'reference' => $order->reference]);
-    $sub2 = $this->service->finalizeOrder($order, ['id' => '2', 'reference' => $order->reference]);
+    $sub1 = $this->service->finalizeOrder($order, $ok + ['id' => '1']);
+    $sub2 = $this->service->finalizeOrder($order, $ok + ['id' => '2']);
 
     expect($sub1->id)->toBe($sub2->id);
     expect($this->user->fresh()->subscriptions()->count())->toBe(1);
@@ -87,12 +90,39 @@ it('markFailed ne downgrade jamais une Order payée', function (): void {
     Mail::fake();
 
     $order = $this->service->createOrderForPlan($this->user, $this->plan);
-    $this->service->finalizeOrder($order, ['id' => '1', 'reference' => $order->reference]);
+    $this->service->finalizeOrder($order, [
+        'id' => '1',
+        'reference' => $order->reference,
+        'amount' => $order->total_cents,
+        'currency' => $order->currency,
+    ]);
 
     $this->service->markFailed($order, ['error' => 'reversed'], 'test');
 
     expect($order->fresh()->status)->toBe(OrderStatus::Paid);
 });
+
+it('refuse finalizeOrder si le montant retourné ne matche pas la commande (C3 audit)', function (): void {
+    $order = $this->service->createOrderForPlan($this->user, $this->plan);
+
+    $this->service->finalizeOrder($order, [
+        'id' => 'psk_tamper',
+        'reference' => $order->reference,
+        'amount' => 1, // tampering — 1 centime au lieu du prix réel
+        'currency' => $order->currency,
+    ]);
+})->throws(\RuntimeException::class, 'Montant ou devise');
+
+it('refuse finalizeOrder si la devise ne matche pas (C3 audit)', function (): void {
+    $order = $this->service->createOrderForPlan($this->user, $this->plan);
+
+    $this->service->finalizeOrder($order, [
+        'id' => 'psk_cur',
+        'reference' => $order->reference,
+        'amount' => $order->total_cents,
+        'currency' => 'USD', // tampering de devise
+    ]);
+})->throws(\RuntimeException::class, 'Montant ou devise');
 
 it('markFailed bascule Order + Payment en failed sur tentative non payée', function (): void {
     $order = $this->service->createOrderForPlan($this->user, $this->plan);

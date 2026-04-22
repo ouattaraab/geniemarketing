@@ -26,7 +26,12 @@ class MediaManager
         ?string $credit = null,
     ): Media {
         $disk = config('filesystems.default', 'local');
-        $extension = $file->getClientOriginalExtension();
+        // Ne PAS utiliser getClientOriginalExtension() — l'extension est
+        // attaquant-controllable (ex. evil.php.jpg). On la dérive du mime
+        // détecté côté serveur. Fallback sur 'bin' pour les contenus
+        // inconnus ; la whitelist mimes du composant Livewire empêche déjà
+        // les binaires exécutables d'arriver jusqu'ici.
+        $extension = $file->guessExtension() ?: 'bin';
         $directory = 'media/'.now()->format('Y/m');
         $filename = Str::uuid().'.'.$extension;
 

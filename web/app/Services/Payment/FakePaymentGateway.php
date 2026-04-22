@@ -70,6 +70,8 @@ class FakePaymentGateway implements PaymentGateway
                 'status' => $outcome,
                 'reference' => $reference,
                 'id' => 'fake_txn_'.time(),
+                'amount' => $order?->total_cents ?? 0,
+                'currency' => $order?->currency ?? 'XOF',
                 'channel' => 'card',
                 'customer' => [
                     'customer_code' => 'CUS_fake_'.substr(md5($reference), 0, 10),

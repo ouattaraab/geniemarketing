@@ -48,16 +48,27 @@ Route::prefix('admin')
         Route::get('/magazines/nouveau', IssueEditor::class)->name('issues.create');
         Route::get('/magazines/{issue}/editer', IssueEditor::class)->name('issues.edit');
 
-        Route::get('/abonnes', SubscriptionList::class)->name('subscribers.index');
-        Route::get('/commandes', OrderList::class)->name('orders.index');
-        Route::get('/newsletters', CampaignList::class)->name('newsletters.index');
-        Route::get('/newsletters/nouveau', CampaignEditor::class)->name('newsletters.create');
-        Route::get('/newsletters/{campaign}/editer', CampaignEditor::class)->name('newsletters.edit');
-        Route::get('/commentaires', CommentList::class)->name('comments.index');
+        // --- Commercial : com / adm / sup -----------------------------------
+        Route::middleware('role:com|adm|sup')->group(function (): void {
+            Route::get('/abonnes', SubscriptionList::class)->name('subscribers.index');
+            Route::get('/commandes', OrderList::class)->name('orders.index');
+            Route::get('/newsletters', CampaignList::class)->name('newsletters.index');
+            Route::get('/newsletters/nouveau', CampaignEditor::class)->name('newsletters.create');
+            Route::get('/newsletters/{campaign}/editer', CampaignEditor::class)->name('newsletters.edit');
+        });
 
-        Route::get('/utilisateurs', UserList::class)->name('users.index');
-        Route::get('/utilisateurs/nouveau', UserEditor::class)->name('users.create');
-        Route::get('/utilisateurs/{user}/editer', UserEditor::class)->name('users.edit');
-        Route::get('/audit', AuditList::class)->name('audit.index');
-        Route::get('/parametres', SettingsEditor::class)->name('settings.index');
+        // --- Modération : chef / edit / adm / sup ----------------------------
+        Route::middleware('role:chef|edit|adm|sup')->group(function (): void {
+            Route::get('/commentaires', CommentList::class)->name('comments.index');
+        });
+
+        // --- Système : adm / sup uniquement ---------------------------------
+        // Bloque l'escalade de privilège via self-edit (C1 de l'audit 2026-04).
+        Route::middleware('role:adm|sup')->group(function (): void {
+            Route::get('/utilisateurs', UserList::class)->name('users.index');
+            Route::get('/utilisateurs/nouveau', UserEditor::class)->name('users.create');
+            Route::get('/utilisateurs/{user}/editer', UserEditor::class)->name('users.edit');
+            Route::get('/audit', AuditList::class)->name('audit.index');
+            Route::get('/parametres', SettingsEditor::class)->name('settings.index');
+        });
     });

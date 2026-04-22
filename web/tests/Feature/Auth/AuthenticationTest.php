@@ -19,7 +19,7 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['type' => 'subscriber']);
 
         $response = $this->post('/login', [
             'email' => $user->email,
@@ -27,7 +27,8 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        // Un abonné atterrit sur son espace /compte (cf. AuthenticatedSessionController::landingPathFor).
+        $response->assertRedirect(route('account', absolute: false));
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

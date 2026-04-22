@@ -186,6 +186,14 @@ final class TiptapRenderer
             return '';
         }
 
+        // Whitelist stricte des schémas : http(s) + chemin interne. Bloque
+        // javascript:, data:text/html, vbscript:, file:, etc., et évite
+        // qu'un contenu Tiptap compromis n'injecte une ressource SSRF ou
+        // XSS via l'attribut src.
+        if (! preg_match('~^(https?://|/)~i', $src)) {
+            return '';
+        }
+
         $alt = e((string) ($node['attrs']['alt'] ?? ''));
         $caption = (string) ($node['attrs']['caption'] ?? '');
 

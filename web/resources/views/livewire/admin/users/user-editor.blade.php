@@ -32,15 +32,23 @@
         </div>
 
         <div class="grid gap-6 md:grid-cols-2">
+            @php
+                $roleLabels = [
+                    'red' => 'Rédacteur',
+                    'chef' => 'Rédacteur en chef',
+                    'edit' => 'Administrateur éditorial',
+                    'com' => 'Gestionnaire commercial',
+                    'adm' => 'Administrateur système',
+                    'sup' => 'Super administrateur',
+                ];
+                $assignable = $this->assignableRoles();
+            @endphp
             <div>
                 <label class="gm-meta mb-2 block">Rôle</label>
                 <select wire:model="role" class="w-full border border-gm-gray-line bg-white px-3 py-2 font-sans text-sm focus:border-gm-red focus:ring-0">
-                    <option value="red">Rédacteur</option>
-                    <option value="chef">Rédacteur en chef</option>
-                    <option value="edit">Administrateur éditorial</option>
-                    <option value="com">Gestionnaire commercial</option>
-                    <option value="adm">Administrateur système</option>
-                    <option value="sup">Super administrateur</option>
+                    @foreach ($assignable as $code)
+                        <option value="{{ $code }}">{{ $roleLabels[$code] ?? $code }}</option>
+                    @endforeach
                 </select>
                 @error('role')<p class="gm-meta mt-1 text-gm-red">{{ $message }}</p>@enderror
             </div>

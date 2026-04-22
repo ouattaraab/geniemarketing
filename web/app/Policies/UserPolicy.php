@@ -28,8 +28,10 @@ class UserPolicy
 
     public function update(User $user, User $target): bool
     {
+        // Le self-edit cosmétique passe par /profile (Breeze) — jamais par
+        // /admin/utilisateurs/{id}/editer qui permettrait une escalade de rôle.
         if ($user->id === $target->id) {
-            return true; // on peut toujours modifier son propre profil via settings
+            return false;
         }
 
         // Personne ne peut éditer un SUP sauf un autre SUP.
@@ -38,6 +40,23 @@ class UserPolicy
         }
 
         return $user->hasAnyRole(['adm', 'sup']);
+    }
+
+    /**
+     * Rôles que l'acteur a le droit d'assigner à un autre compte.
+     * Un SUP peut tout assigner ; un ADM peut tout sauf SUP.
+     *
+     * @return list<string>
+     */
+    public function assignableRoles(User $user): array
+    {
+        if ($user->hasRole('sup')) {
+            return ['red', 'chef', 'edit', 'com', 'adm', 'sup'];
+        }
+        if ($user->hasRole('adm')) {
+            return ['red', 'chef', 'edit', 'com', 'adm'];
+        }
+        return [];
     }
 
     public function delete(User $user, User $target): bool

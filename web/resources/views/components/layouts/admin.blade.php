@@ -47,7 +47,7 @@
                         ['Articles', 'admin.articles.index', '📝', null, null],
                         ['Médias', 'admin.media.index', '🖼️', null, null],
                         ['Taxonomies', 'admin.taxonomies.index', '🏷️', null, null],
-                        ['Magazines', 'admin.issues.index', '📰', null, null],
+                        ['Magazines', 'admin.issues.index', '📰', null, ['chef', 'edit', 'adm', 'sup']],
                         ['Commentaires', 'admin.comments.index', '💬', $pendingComments > 0 ? $pendingComments : null, ['chef', 'edit', 'adm', 'sup']],
                     ],
                     'Commercial' => [

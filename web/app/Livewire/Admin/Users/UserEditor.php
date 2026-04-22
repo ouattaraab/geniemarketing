@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Livewire\Admin\Users;
 
 use App\Models\User;
+use App\Policies\UserPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -16,6 +19,12 @@ use Livewire\Component;
 #[Title('Utilisateur — GM Admin')]
 class UserEditor extends Component
 {
+    /**
+     * Locked : Livewire refuse toute hydratation de cette propriété depuis
+     * le client (évite qu'un payload forgé change l'utilisateur cible en
+     * cours de requête → escalade de privilège).
+     */
+    #[Locked]
     public ?User $user = null;
 
     public string $firstName = '';
@@ -43,8 +52,28 @@ class UserEditor extends Component
         abort_unless(auth()->user()?->can('create', User::class), 403);
     }
 
+    /**
+     * @return list<string>
+     */
+    public function assignableRoles(): array
+    {
+        return app(UserPolicy::class)->assignableRoles(auth()->user());
+    }
+
     public function save(): void
     {
+        $actor = auth()->user();
+        abort_if($actor === null, 403);
+
+        // Empêche un acteur de se modifier lui-même via cet écran (seule la
+        // page /profile est autorisée pour le self-edit).
+        if ($this->user?->exists && $this->user->id === $actor->id) {
+            abort(403, 'Utilisez votre page profil pour modifier vos informations.');
+        }
+
+        $assignable = $this->assignableRoles();
+        abort_if($assignable === [], 403);
+
         $validated = $this->validate([
             'firstName' => ['required', 'string', 'max:120'],
             'lastName' => ['required', 'string', 'max:120'],
@@ -52,7 +81,7 @@ class UserEditor extends Component
                 'unique:users,email'.($this->user?->id ? ','.$this->user->id : ''),
             ],
             'phone' => ['nullable', 'string', 'max:40'],
-            'role' => ['required', 'in:red,chef,edit,com,adm,sup'],
+            'role' => ['required', Rule::in($assignable)],
             'status' => ['required', 'in:active,inactive,pending'],
         ]);
 

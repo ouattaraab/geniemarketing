@@ -57,14 +57,15 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 
-    // Déconnexion par GET pour éviter l'erreur 405 quand un lien dégrade en
-    // navigation classique (JS off, clic milieu, partage, bookmark, etc.).
-    // Idempotente : si la session est déjà déconnectée, redirige simplement.
+    // Déconnexion par GET (fallback UX) — signée pour bloquer les attaques
+    // CSRF du type <img src="/logout"> sur un site tiers. La signature est
+    // générée via URL::signedRoute('logout.get') partout où le lien est
+    // exposé ; un attaquant ne peut pas deviner le token sans APP_KEY.
     Route::get('logout', function (\Illuminate\Http\Request $request) {
         \Illuminate\Support\Facades\Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect('/')->with('status', 'Vous êtes déconnecté. À bientôt !');
-    })->name('logout.get');
+    })->middleware('signed')->name('logout.get');
 });
