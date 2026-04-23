@@ -53,6 +53,11 @@ class User extends Authenticatable
         return $this->hasMany(AccessRight::class);
     }
 
+    public function consents(): HasMany
+    {
+        return $this->hasMany(Consent::class)->latest('created_at');
+    }
+
     public function activeSubscription(): HasOne
     {
         return $this->hasOne(Subscription::class)->active()->latest('end_date');

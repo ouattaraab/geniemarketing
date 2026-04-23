@@ -7,8 +7,10 @@ namespace App\Http\Controllers\Public;
 use App\Contracts\PaymentGateway;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Consent;
 use App\Models\Order;
 use App\Models\PromoCode;
+use App\Models\Setting;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Services\Commerce\CheckoutService;
@@ -94,7 +96,14 @@ class CheckoutController extends Controller
             // Ceinture contre la session fixation : un attaquant ayant
             // pré-positionné un cookie de session perdrait la main ici.
             $request->session()->regenerate();
-        } else {
+        }
+
+        // Traçabilité opposable du consentement (RGPD art. 7.1) : horodatage
+        // + IP + UA + version du document au moment exact de l'acceptation,
+        // pour tout utilisateur (nouveau ou déjà connecté).
+        $this->recordCheckoutConsents($user, $request, (bool) ($data['newsletter_opt_in'] ?? false));
+
+        if ($user->wasRecentlyCreated === false && $user->exists) {
             // Mise à jour des coordonnées si fournies
             $user->fill([
                 'first_name' => $data['first_name'],
@@ -164,6 +173,19 @@ class CheckoutController extends Controller
             ]);
         }
 
+        // Persiste le session id gateway (cos-xxx pour Wave) sur le Payment
+        // pour pouvoir le réutiliser au GET /checkout/sessions/:id lors du
+        // callback verify. Sans lien session↔reference, un retry utilisateur
+        // bloquerait la vérification Wave.
+        if ($init->accessCode !== null && $init->accessCode !== '') {
+            \App\Models\Payment::where('order_id', $order->id)
+                ->where('provider_reference', $order->reference)
+                ->where('provider', $this->gateway->providerCode())
+                ->latest('id')
+                ->first()
+                ?->update(['provider_transaction_id' => $init->accessCode]);
+        }
+
         return redirect()->away($init->authorizationUrl);
     }
 
@@ -210,6 +232,26 @@ class CheckoutController extends Controller
         }
 
         return redirect()->route('subscribe')->with('status', 'Votre paiement est en cours de traitement. Vous recevrez un email à confirmation.');
+    }
+
+    /**
+     * Enregistre une preuve opposable d'acceptation des CGU + politique de
+     * confidentialité au moment du checkout, et du consentement marketing
+     * si l'utilisateur a coché la case newsletter (art. 7 RGPD / loi 2013-450).
+     */
+    private function recordCheckoutConsents(User $user, Request $request, bool $marketingOptIn): void
+    {
+        $ip = $request->ip();
+        $ua = (string) $request->userAgent();
+        $termsVersion = (string) Setting::get('legal.terms_updated_at', now()->toDateString());
+        $privacyVersion = (string) Setting::get('legal.privacy_updated_at', now()->toDateString());
+
+        Consent::record($user->id, Consent::DOC_TERMS, $termsVersion, Consent::ACTION_GRANTED, 'checkout', $ip, $ua);
+        Consent::record($user->id, Consent::DOC_PRIVACY, $privacyVersion, Consent::ACTION_GRANTED, 'checkout', $ip, $ua);
+
+        if ($marketingOptIn) {
+            Consent::record($user->id, Consent::DOC_MARKETING, now()->toDateString(), Consent::ACTION_GRANTED, 'checkout', $ip, $ua);
+        }
     }
 
     private function subscribeToDefaultNewsletter(User $user, ?string $ip): void

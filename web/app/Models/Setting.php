@@ -18,11 +18,18 @@ class Setting extends Model
     {
         // On ne cache que la forme sérialisable [value, type] pour éviter les soucis
         // d'unserialize d'objets Eloquent entre contextes (opcache, queues, etc.).
-        $payload = Cache::rememberForever("setting:$key", function () use ($key): ?array {
-            $row = static::where('key', $key)->first();
+        // Tolérant à l'absence de la table (tests unitaires sans migrations,
+        // boot anticipé pendant une migration initiale) : on renvoie $default
+        // au lieu de faire planter la vue.
+        try {
+            $payload = Cache::rememberForever("setting:$key", function () use ($key): ?array {
+                $row = static::where('key', $key)->first();
 
-            return $row ? ['value' => $row->value, 'type' => $row->type] : null;
-        });
+                return $row ? ['value' => $row->value, 'type' => $row->type] : null;
+            });
+        } catch (\Throwable) {
+            return $default;
+        }
 
         if ($payload === null) {
             return $default;

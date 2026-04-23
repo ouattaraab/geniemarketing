@@ -3,7 +3,7 @@
         $groupLabels = [
             'branding' => ['Identité', 'Baseline, copyright et ton éditorial.'],
             'contact' => ['Contact', 'Coordonnées affichées sur le site et dans les mails.'],
-            'legal' => ['Mentions légales', 'Éditeur, DPO, lien mentions.'],
+            'legal' => ['Mentions légales & juridique', 'Identité de la société éditrice (RCCM, NIF, capital), directeur de la publication, hébergeur et dates de dernière mise à jour des 4 pages légales.'],
             'social' => ['Réseaux sociaux', 'Liens vers vos profils publics.'],
             'promo' => ['Bannière promo', 'Bannière en tête de page pour une offre limitée.'],
             'paywall' => ['Paywall & freemium', 'Quota gratuit et règles d\'accès.'],
