@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use App\Services\FreemiumCounter;
-use Illuminate\Cache\Repository as CacheRepository;
 use Illuminate\Cache\ArrayStore;
+use Illuminate\Cache\Repository as CacheRepository;
 use Illuminate\Http\Request;
 
 function makeCounter(int $limit = 3): FreemiumCounter
 {
     return new FreemiumCounter(
-        cache: new CacheRepository(new ArrayStore()),
+        cache: new CacheRepository(new ArrayStore),
         monthlyLimit: $limit,
     );
 }

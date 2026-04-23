@@ -9,6 +9,8 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -61,8 +63,8 @@ Route::middleware('auth')->group(function () {
     // CSRF du type <img src="/logout"> sur un site tiers. La signature est
     // générée via URL::signedRoute('logout.get') partout où le lien est
     // exposé ; un attaquant ne peut pas deviner le token sans APP_KEY.
-    Route::get('logout', function (\Illuminate\Http\Request $request) {
-        \Illuminate\Support\Facades\Auth::logout();
+    Route::get('logout', function (Request $request) {
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

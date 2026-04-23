@@ -41,10 +41,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP 8.2
+      - name: Setup PHP 8.4
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
           extensions: mbstring, pdo, pdo_mysql, redis, bcmath, intl, gd
           coverage: none
           tools: composer:v2
@@ -71,7 +71,11 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Install npm dependencies
-        run: npm ci
+        # `npm install` plutôt que `npm ci` : le lockfile committé depuis
+        # macOS omet les deps optionnelles spécifiques Linux (@emnapi/*
+        # requises sur ce runner Ubuntu). `npm install` résout tout sans
+        # échouer sur un platform mismatch.
+        run: npm install --no-audit --no-fund
 
       - name: Prepare .env
         run: |
@@ -109,4 +113,4 @@ jobs:
           DB_DATABASE: gm_test
           DB_USERNAME: root
           DB_PASSWORD: root
-        run: php artisan test
+        run: ./vendor/bin/pest --no-coverage

@@ -1,4 +1,4 @@
-{{-- Simulateur local de hosted checkout — stand-in Paystack en dev --}}
+{{-- Simulateur local de hosted checkout — stand-in Wave/Paystack en dev --}}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -17,9 +17,9 @@
         </div>
 
         <div class="overflow-hidden rounded-lg bg-white shadow-2xl">
-            <div class="bg-[#00C3F7] px-6 py-4">
+            <div class="bg-[#1B36EA] px-6 py-4">
                 <div class="flex items-center gap-2 text-white">
-                    <span class="font-bold text-lg">Paystack</span>
+                    <span class="font-bold text-lg">Wave</span>
                     <span class="text-xs opacity-75">(simulé)</span>
                 </div>
             </div>
@@ -36,6 +36,9 @@
                         {{ number_format($order->total_cents / 100, 0, ',', ' ') }}
                         <span class="text-lg font-normal text-slate-600">{{ $order->currency }}</span>
                     </div>
+                    <div class="mt-2 text-xs text-slate-500">
+                        Numéro Wave test : <span class="font-mono">+225 01 02 03 04 05</span> (factice)
+                    </div>
                 </div>
 
                 <div class="space-y-2">
@@ -44,8 +47,8 @@
                         <input type="hidden" name="callback" value="{{ $callback }}" />
                         <input type="hidden" name="outcome" value="success" />
                         <button type="submit"
-                                class="w-full rounded bg-emerald-600 px-4 py-3 font-bold text-white transition hover:bg-emerald-700">
-                            Payer {{ number_format($order->total_cents / 100, 0, ',', ' ') }} {{ $order->currency }}
+                                class="w-full rounded bg-[#1B36EA] px-4 py-3 font-bold text-white transition hover:bg-[#1429B8]">
+                            Payer {{ number_format($order->total_cents / 100, 0, ',', ' ') }} {{ $order->currency }} avec Wave
                         </button>
                     </form>
 
@@ -55,7 +58,7 @@
                         <input type="hidden" name="outcome" value="failed" />
                         <button type="submit"
                                 class="w-full rounded border border-rose-300 bg-white px-4 py-2 text-sm text-rose-700 transition hover:bg-rose-50">
-                            Simuler un échec (carte refusée)
+                            Simuler un échec (solde insuffisant)
                         </button>
                     </form>
 
@@ -71,8 +74,8 @@
                 </div>
 
                 <p class="mt-6 text-center text-xs text-slate-400">
-                    Ce simulateur remplace Paystack tant que la clé API est un placeholder.
-                    Aucune transaction réelle n'est effectuée.
+                    Simulateur actif tant que <code>WAVE_API_KEY</code> est un placeholder
+                    ou que <code>PAYMENT_GATEWAY=fake</code>. Aucune transaction réelle.
                 </p>
             </div>
         </div>

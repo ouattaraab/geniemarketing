@@ -7,6 +7,7 @@ namespace App\Livewire\Admin\Users;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -28,10 +29,15 @@ class UserEditor extends Component
     public ?User $user = null;
 
     public string $firstName = '';
+
     public string $lastName = '';
+
     public string $email = '';
+
     public string $phone = '';
+
     public string $role = 'red';
+
     public string $status = 'pending';
 
     public function mount(?User $user = null): void
@@ -112,7 +118,7 @@ class UserEditor extends Component
                 Password::sendResetLink(['email' => $this->user->email]);
                 $mailSent = true;
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::warning('UserEditor: activation mail failed', [
+                Log::warning('UserEditor: activation mail failed', [
                     'user_id' => $this->user->id,
                     'email' => $this->user->email,
                     'error' => $e->getMessage(),

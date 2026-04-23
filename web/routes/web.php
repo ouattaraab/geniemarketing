@@ -2,14 +2,24 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\PaystackWebhookController;
+use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Public\AccountController;
 use App\Http\Controllers\Public\ArticleController;
 use App\Http\Controllers\Public\CategoryController;
 use App\Http\Controllers\Public\CheckoutController;
+use App\Http\Controllers\Public\CheckoutSimulatorController;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\InvoiceController;
+use App\Http\Controllers\Public\LegalController;
 use App\Http\Controllers\Public\MagazineController;
+use App\Http\Controllers\Public\NewsletterController;
+use App\Http\Controllers\Public\SearchController;
+use App\Http\Controllers\Public\SitemapController;
 use App\Http\Controllers\Public\SubscribeController;
+use App\Http\Controllers\WaveWebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,14 +29,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [HomeController::class, '__invoke'])->name('home');
-Route::get('/sitemap.xml', \App\Http\Controllers\Public\SitemapController::class)->name('sitemap');
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
 /*
 |--------------------------------------------------------------------------
 | Pages légales (EP-15 / EP-22)
 |--------------------------------------------------------------------------
 */
-Route::controller(\App\Http\Controllers\Public\LegalController::class)->group(function (): void {
+Route::controller(LegalController::class)->group(function (): void {
     Route::get('/mentions-legales', 'mentions')->name('legal.mentions');
     Route::get('/confidentialite', 'privacy')->name('legal.privacy');
     Route::get('/cgu', 'terms')->name('legal.terms');
@@ -34,7 +44,7 @@ Route::controller(\App\Http\Controllers\Public\LegalController::class)->group(fu
 });
 
 Route::get('/rubriques/{category:slug}', [CategoryController::class, 'show'])->name('category.show');
-Route::get('/recherche', \App\Http\Controllers\Public\SearchController::class)->name('search');
+Route::get('/recherche', SearchController::class)->name('search');
 
 Route::get('/articles/{article:slug}', [ArticleController::class, 'show'])->name('article.show');
 Route::get('/magazine', [MagazineController::class, 'index'])->name('magazine');
@@ -51,20 +61,20 @@ Route::get('/abonnement', [SubscribeController::class, 'index'])->name('subscrib
 | Newsletter (double opt-in)
 |--------------------------------------------------------------------------
 */
-Route::post('/newsletter/inscription', [\App\Http\Controllers\Public\NewsletterController::class, 'subscribe'])
+Route::post('/newsletter/inscription', [NewsletterController::class, 'subscribe'])
     ->middleware(['throttle:10,1'])
     ->name('newsletter.subscribe');
-Route::get('/newsletter/confirmer/{token}', [\App\Http\Controllers\Public\NewsletterController::class, 'confirm'])
+Route::get('/newsletter/confirmer/{token}', [NewsletterController::class, 'confirm'])
     ->name('newsletter.confirm');
-Route::get('/newsletter/desinscription/{token}', [\App\Http\Controllers\Public\NewsletterController::class, 'unsubscribe'])
+Route::get('/newsletter/desinscription/{token}', [NewsletterController::class, 'unsubscribe'])
     ->name('newsletter.unsubscribe');
 
 /*
 |--------------------------------------------------------------------------
-| Paiement (Paystack)
+| Paiement (Wave Business — gateway principal)
 |--------------------------------------------------------------------------
 */
-// Tunnel d'abonnement : formulaire intermédiaire → paiement Paystack
+// Tunnel d'abonnement : formulaire intermédiaire → paiement Wave
 Route::get('/abonnement/{plan:code}/inscription', [CheckoutController::class, 'form'])
     ->name('checkout.form');
 Route::post('/abonnement/{plan:code}/inscription', [CheckoutController::class, 'process'])
@@ -74,14 +84,19 @@ Route::post('/abonnement/{plan:code}/inscription', [CheckoutController::class, '
 Route::get('/paiement/callback', [CheckoutController::class, 'callback'])
     ->name('checkout.callback');
 
-// Simulateur local : stand-in pour le hosted checkout Paystack en dev
+// Simulateur local : stand-in pour le hosted checkout en dev (Wave/Paystack)
 if (! app()->environment('production')) {
-    Route::get('/paiement/simulateur/{reference}', [\App\Http\Controllers\Public\CheckoutSimulatorController::class, 'show'])
+    Route::get('/paiement/simulateur/{reference}', [CheckoutSimulatorController::class, 'show'])
         ->name('checkout.simulator');
-    Route::post('/paiement/simulateur/{reference}', [\App\Http\Controllers\Public\CheckoutSimulatorController::class, 'simulate'])
+    Route::post('/paiement/simulateur/{reference}', [CheckoutSimulatorController::class, 'simulate'])
         ->name('checkout.simulator.submit');
 }
 
+Route::post('/webhooks/wave', WaveWebhookController::class)
+    ->middleware(['throttle:60,1', 'wave.ip'])
+    ->name('webhooks.wave');
+
+// Paystack conservé comme provider secondaire optionnel (PAYMENT_GATEWAY=paystack).
 Route::post('/webhooks/paystack', PaystackWebhookController::class)
     ->middleware(['throttle:60,1', 'paystack.ip'])
     ->name('webhooks.paystack');
@@ -92,8 +107,8 @@ Route::post('/webhooks/paystack', PaystackWebhookController::class)
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function (): void {
-    Route::get('/compte', \App\Http\Controllers\Public\AccountController::class)->name('account');
-    Route::get('/compte/factures/{invoice:number}/pdf', [\App\Http\Controllers\Public\InvoiceController::class, 'download'])
+    Route::get('/compte', AccountController::class)->name('account');
+    Route::get('/compte/factures/{invoice:number}/pdf', [InvoiceController::class, 'download'])
         ->name('account.invoice.download');
     // Redirection intelligente — aiguille chaque profil vers son espace.
     Route::get('/dashboard', function () {
@@ -104,6 +119,7 @@ Route::middleware('auth')->group(function (): void {
         if ($user?->type === 'subscriber') {
             return redirect()->route('account');
         }
+
         return redirect()->route('home');
     })->name('dashboard');
 
@@ -111,14 +127,19 @@ Route::middleware('auth')->group(function (): void {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // RGPD — export des données personnelles (art. 20 portabilité).
+    Route::get('/compte/mes-donnees/export', [PrivacyController::class, 'export'])
+        ->middleware('throttle:3,10')
+        ->name('privacy.export');
+
     // 2FA (US-006)
-    Route::get('/2fa/setup', [\App\Http\Controllers\Auth\TwoFactorController::class, 'setup'])->name('2fa.setup');
-    Route::post('/2fa/setup', [\App\Http\Controllers\Auth\TwoFactorController::class, 'enable'])
+    Route::get('/2fa/setup', [TwoFactorController::class, 'setup'])->name('2fa.setup');
+    Route::post('/2fa/setup', [TwoFactorController::class, 'enable'])
         ->middleware('throttle:5,1')->name('2fa.enable');
-    Route::get('/2fa/challenge', [\App\Http\Controllers\Auth\TwoFactorController::class, 'challenge'])->name('2fa.challenge');
-    Route::post('/2fa/challenge', [\App\Http\Controllers\Auth\TwoFactorController::class, 'verify'])
+    Route::get('/2fa/challenge', [TwoFactorController::class, 'challenge'])->name('2fa.challenge');
+    Route::post('/2fa/challenge', [TwoFactorController::class, 'verify'])
         ->middleware('throttle:5,1')->name('2fa.verify');
-    Route::delete('/2fa', [\App\Http\Controllers\Auth\TwoFactorController::class, 'disable'])->name('2fa.disable');
+    Route::delete('/2fa', [TwoFactorController::class, 'disable'])->name('2fa.disable');
 });
 
 /*

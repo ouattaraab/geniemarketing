@@ -21,11 +21,31 @@ class SettingSeeder extends Seeder
             ['contact', 2, 'contact.phone', 'Téléphone', 'string', '+225 01 00 00 00 00', null],
             ['contact', 3, 'contact.address', 'Adresse postale', 'text', 'Abidjan, Côte d\'Ivoire', null],
 
-            // === Légal ===
-            ['legal', 1, 'legal.editor', 'Éditeur (mentions légales)', 'string', 'SARL GÉNIE MARKETING', null],
-            ['legal', 2, 'legal.director', 'Directeur de publication', 'string', '—', null],
-            ['legal', 3, 'legal.dpo_email', 'DPO — email', 'email', 'dpo@geniemag.ci', 'Délégué à la protection des données (RGPD / Loi 2013-450 CI)'],
-            ['legal', 4, 'legal.mentions_url', 'URL mentions légales', 'url', '/mentions-legales', null],
+            // === Légal — Éditeur / Société ===
+            ['legal', 1, 'legal.editor', 'Raison sociale de l\'éditeur', 'string', 'SARL GÉNIE MARKETING', 'Dénomination sociale exacte telle qu\'immatriculée au RCCM.'],
+            ['legal', 2, 'legal.editor_form', 'Forme juridique', 'string', 'SARL', 'SARL, SA, SAS, Entreprise individuelle…'],
+            ['legal', 3, 'legal.editor_capital', 'Capital social', 'string', '1 000 000 FCFA', 'Capital social en FCFA — obligatoire pour SARL/SA sur mentions légales.'],
+            ['legal', 4, 'legal.editor_rccm', 'Numéro RCCM', 'string', 'CI-ABJ-2025-B-xxxxx', 'Registre du Commerce et du Crédit Mobilier (Abidjan).'],
+            ['legal', 5, 'legal.editor_nif', 'Numéro NIF', 'string', '—', 'Numéro d\'Identification Fiscale délivré par la DGI.'],
+            ['legal', 6, 'legal.editor_cc', 'Compte Contribuable', 'string', '—', 'Numéro de compte contribuable DGI — apparaît sur les factures.'],
+            ['legal', 7, 'legal.director', 'Directeur de la publication', 'string', '—', 'Personne physique responsable au sens de la loi 2017-867 sur la presse.'],
+            ['legal', 8, 'legal.cppap_number', 'Numéro CNPCI / presse', 'string', '—', 'Numéro délivré par le Conseil National de la Presse (CNPCI) si applicable.'],
+            ['legal', 9, 'legal.dpo_email', 'DPO — email', 'email', 'dpo@geniemag.ci', 'Délégué à la protection des données (RGPD / Loi 2013-450 CI)'],
+
+            // === Légal — Hébergeur (obligatoire loi 2013-451 CI) ===
+            ['legal', 20, 'legal.host_name', 'Hébergeur — raison sociale', 'string', 'Hostinger International Ltd.', 'Obligation de publier le nom de l\'hébergeur.'],
+            ['legal', 21, 'legal.host_address', 'Hébergeur — adresse', 'text', '61 Lordou Vironos Street, 6023 Larnaca, Chypre', null],
+            ['legal', 22, 'legal.host_url', 'Hébergeur — site web', 'url', 'https://www.hostinger.com', null],
+            ['legal', 23, 'legal.host_phone', 'Hébergeur — téléphone', 'string', '+357 24 030 706', null],
+
+            // === Légal — Dates de mise à jour (affichées sur les pages) ===
+            ['legal', 30, 'legal.terms_updated_at', 'CGU/CGV — dernière mise à jour', 'string', '2026-04-23', 'Format YYYY-MM-DD. À incrémenter à chaque modification des CGU/CGV.'],
+            ['legal', 31, 'legal.privacy_updated_at', 'Politique de confidentialité — dernière mise à jour', 'string', '2026-04-23', 'Format YYYY-MM-DD.'],
+            ['legal', 32, 'legal.mentions_updated_at', 'Mentions légales — dernière mise à jour', 'string', '2026-04-23', 'Format YYYY-MM-DD.'],
+            ['legal', 33, 'legal.cookies_updated_at', 'Politique cookies — dernière mise à jour', 'string', '2026-04-23', 'Format YYYY-MM-DD.'],
+
+            // === Légal — Liens publics ===
+            ['legal', 40, 'legal.mentions_url', 'URL mentions légales', 'url', '/mentions-legales', null],
 
             // === Social ===
             ['social', 1, 'social.linkedin', 'LinkedIn', 'url', 'https://www.linkedin.com/company/genie-marketing-mag', null],

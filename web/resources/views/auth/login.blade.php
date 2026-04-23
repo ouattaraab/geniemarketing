@@ -1,47 +1,58 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<x-layouts.public title="Connexion — GÉNIE MARKETING Mag">
+    <section class="mx-auto max-w-container-narrow px-8 py-16">
+        <div class="mx-auto max-w-md">
+            <x-gm.section-heading subtitle="Accès abonnés">
+                Se connecter
+            </x-gm.section-heading>
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
+            @if (session('status'))
+                <div class="mb-6 border-l-4 border-gm-ink bg-white px-4 py-3 text-sm text-gm-ink">
+                    {{ session('status') }}
+                </div>
             @endif
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
+            <div class="border border-gm-gray-line bg-white p-6 sm:p-8">
+                <form method="POST" action="{{ route('login') }}" class="space-y-5">
+                    @csrf
+
+                    <div>
+                        <label for="email" class="gm-meta block mb-2">Email <span class="text-gm-red">*</span></label>
+                        <input id="email" name="email" type="email" required autofocus autocomplete="username"
+                               value="{{ old('email') }}"
+                               class="w-full border border-gm-gray-line bg-white px-4 py-3 text-gm-ink focus:border-gm-red focus:outline-none focus:ring-0" />
+                        @error('email')<p class="gm-meta mt-2 text-gm-red">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label for="password" class="gm-meta block mb-2">Mot de passe <span class="text-gm-red">*</span></label>
+                        <input id="password" name="password" type="password" required autocomplete="current-password"
+                               class="w-full border border-gm-gray-line bg-white px-4 py-3 text-gm-ink focus:border-gm-red focus:outline-none focus:ring-0" />
+                        @error('password')<p class="gm-meta mt-2 text-gm-red">{{ $message }}</p>@enderror
+                    </div>
+
+                    <label class="flex items-center gap-2 font-sans text-sm text-gm-charcoal">
+                        <input type="checkbox" name="remember" class="border-gm-gray-line text-gm-red focus:ring-gm-red" />
+                        <span>Rester connecté</span>
+                    </label>
+
+                    <button type="submit" class="gm-btn-primary w-full">Se connecter</button>
+
+                    @if (Route::has('password.request'))
+                        <p class="gm-meta text-center normal-case tracking-normal">
+                            <a href="{{ route('password.request') }}" class="hover:text-gm-red">
+                                Mot de passe oublié ?
+                            </a>
+                        </p>
+                    @endif
+                </form>
+            </div>
+
+            <p class="gm-meta mt-8 text-center normal-case tracking-normal">
+                Pas encore abonné ?
+                <a href="{{ route('subscribe') }}" class="font-bold text-gm-red hover:text-gm-red-bright">
+                    Découvrir nos formules
+                </a>
+            </p>
         </div>
-    </form>
-</x-guest-layout>
+    </section>
+</x-layouts.public>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Services\TwoFactorAuth;
 use Database\Seeders\RoleSeeder;
+use PragmaRX\Google2FA\Google2FA;
 
 beforeEach(function (): void {
     $this->seed(RoleSeeder::class);
@@ -36,7 +37,7 @@ it('active la 2FA avec un code TOTP valide et génère 8 codes de récupération
     $user = User::factory()->backoffice()->create();
     $secret = $this->service->generateSecret($user);
 
-    $google2fa = app(\PragmaRX\Google2FA\Google2FA::class);
+    $google2fa = app(Google2FA::class);
     $validCode = $google2fa->getCurrentOtp($secret);
 
     $ok = $this->service->enable($user->fresh(), $validCode);
@@ -56,7 +57,7 @@ it('active la 2FA avec un code TOTP valide et génère 8 codes de récupération
 it('consomme un code de récupération à usage unique', function (): void {
     $user = User::factory()->backoffice()->create();
     $secret = $this->service->generateSecret($user);
-    $this->service->enable($user->fresh(), app(\PragmaRX\Google2FA\Google2FA::class)->getCurrentOtp($secret));
+    $this->service->enable($user->fresh(), app(Google2FA::class)->getCurrentOtp($secret));
 
     $user->refresh();
     $firstCode = $this->service->recoveryCodes($user)[0];
@@ -74,7 +75,7 @@ it('consomme un code de récupération à usage unique', function (): void {
 it('désactive la 2FA et efface les codes', function (): void {
     $user = User::factory()->backoffice()->create();
     $secret = $this->service->generateSecret($user);
-    $this->service->enable($user->fresh(), app(\PragmaRX\Google2FA\Google2FA::class)->getCurrentOtp($secret));
+    $this->service->enable($user->fresh(), app(Google2FA::class)->getCurrentOtp($secret));
 
     $this->service->disable($user->fresh());
 

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\User;
-use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Support\Facades\Crypt;
@@ -103,7 +103,7 @@ class TwoFactorAuth
             rawurlencode($issuer),
         );
 
-        $renderer = new ImageRenderer(new RendererStyle(256), new SvgImageBackEnd());
+        $renderer = new ImageRenderer(new RendererStyle(256), new SvgImageBackEnd);
 
         return (new Writer($renderer))->writeString($uri);
     }

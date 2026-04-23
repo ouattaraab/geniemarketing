@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -68,7 +69,7 @@ return new class extends Migration
             $table->index(['category_id', 'status']);
 
             // Full-text uniquement sur MySQL (SQLite/Pgsql gèrent autrement).
-            if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'mysql') {
+            if (DB::connection()->getDriverName() === 'mysql') {
                 $table->fullText(['title', 'lede']);
             }
         });

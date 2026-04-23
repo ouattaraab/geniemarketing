@@ -36,7 +36,18 @@ return [
     ],
 
     'payment' => [
-        'default' => env('PAYMENT_GATEWAY', 'paystack'),
+        'default' => env('PAYMENT_GATEWAY', 'wave'),
+    ],
+
+    'wave' => [
+        'api_key' => env('WAVE_API_KEY'),
+        'webhook_secret' => env('WAVE_WEBHOOK_SECRET'),
+        'base_url' => env('WAVE_BASE_URL', 'https://api.wave.com'),
+        // Optionnel : Wave ne publie pas officiellement sa liste d'IPs sortantes.
+        // Si fournie (liste séparée par virgules), le webhook rejette toute IP
+        // hors whitelist. Laisser vide en pratique — la signature HMAC SHA-256
+        // sur Wave-Signature reste la défense primaire.
+        'webhook_allowed_ips' => array_filter(explode(',', (string) env('WAVE_WEBHOOK_IPS', ''))),
     ],
 
     'paystack' => [

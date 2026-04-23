@@ -27,7 +27,7 @@ class CheckoutService
     /** Taux de TVA applicable en Côte d'Ivoire (0% pour les services numériques pour MVP — à affiner avec l'expert-comptable). */
     private const TAX_RATE_CENTS = 0;
 
-    public function createOrderForPlan(User $user, SubscriptionPlan $plan, ?string $provider = 'paystack'): Order
+    public function createOrderForPlan(User $user, SubscriptionPlan $plan, ?string $provider = 'wave'): Order
     {
         return DB::transaction(function () use ($user, $plan, $provider): Order {
             $reference = $this->uniqueReference();
@@ -64,7 +64,7 @@ class CheckoutService
             // Crée un payment en pending pour tracer la tentative
             Payment::create([
                 'order_id' => $order->id,
-                'provider' => $provider ?? 'paystack',
+                'provider' => $provider ?? 'wave',
                 'provider_reference' => $reference,
                 'status' => PaymentStatus::Pending,
                 'amount_cents' => $order->total_cents,
@@ -82,7 +82,7 @@ class CheckoutService
      *  - émet une Invoice
      * Idempotent : si déjà traité, retourne la subscription existante.
      */
-    public function finalizeOrder(Order $order, array $providerData, string $provider = 'paystack'): Subscription
+    public function finalizeOrder(Order $order, array $providerData, string $provider = 'wave'): Subscription
     {
         return DB::transaction(function () use ($order, $providerData, $provider): Subscription {
             // Verrou pessimiste : évite qu'un webhook et le callback
@@ -103,7 +103,7 @@ class CheckoutService
             $receivedAmount = (int) ($providerData['amount'] ?? -1);
             $receivedCurrency = strtoupper((string) ($providerData['currency'] ?? ''));
             if ($receivedAmount !== $order->total_cents || $receivedCurrency !== strtoupper($order->currency)) {
-                \Illuminate\Support\Facades\Log::critical('Payment amount/currency mismatch — refusé', [
+                Log::critical('Payment amount/currency mismatch — refusé', [
                     'order' => $order->reference,
                     'expected_amount_cents' => $order->total_cents,
                     'received_amount_cents' => $receivedAmount,
@@ -120,8 +120,29 @@ class CheckoutService
                 ->latest('id')
                 ->firstOrFail();
 
+            // H1 — Vérification session id / transaction id : le payload reçu
+            // doit correspondre à l'intention persistée lors de l'init (cos-…
+            // pour Wave, id transaction pour Paystack). Sans cette vérif, un
+            // attaquant ayant obtenu un payload HMAC valide pourrait finaliser
+            // une autre order du même user au même montant (retries webhook
+            // mal redirigés, collisions pathologiques).
+            $receivedSessionId = (string) ($providerData['id'] ?? '');
+            $expectedSessionId = (string) ($payment->provider_transaction_id ?? '');
+            if ($expectedSessionId !== '' && $receivedSessionId !== ''
+                && ! hash_equals($expectedSessionId, $receivedSessionId)) {
+                Log::critical('Payment session id mismatch — refusé', [
+                    'order' => $order->reference,
+                    'expected_session_id' => $expectedSessionId,
+                    'received_session_id' => $receivedSessionId,
+                    'provider' => $provider,
+                ]);
+                throw new \RuntimeException('Session id du gateway incohérent avec le paiement initial.');
+            }
+
             $payment->status = PaymentStatus::Success;
-            $payment->provider_transaction_id = (string) ($providerData['id'] ?? $payment->provider_transaction_id);
+            $payment->provider_transaction_id = $receivedSessionId !== ''
+                ? $receivedSessionId
+                : $payment->provider_transaction_id;
             $payment->channel = $this->mapChannel($providerData['channel'] ?? null);
             $payment->raw_response = $providerData;
             $payment->captured_at = now();
@@ -191,7 +212,7 @@ class CheckoutService
         });
     }
 
-    public function markFailed(Order $order, array $providerData, ?string $reason = null, string $provider = 'paystack'): void
+    public function markFailed(Order $order, array $providerData, ?string $reason = null, string $provider = 'wave'): void
     {
         DB::transaction(function () use ($order, $providerData, $reason, $provider): void {
             $order->refresh();

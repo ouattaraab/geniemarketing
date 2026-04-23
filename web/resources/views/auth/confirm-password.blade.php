@@ -1,27 +1,29 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
-    </div>
+<x-layouts.public title="Confirmer le mot de passe — GÉNIE MARKETING Mag">
+    <section class="mx-auto max-w-container-narrow px-8 py-16">
+        <div class="mx-auto max-w-md">
+            <x-gm.section-heading subtitle="Zone sécurisée">
+                Confirmer votre identité
+            </x-gm.section-heading>
 
-    <form method="POST" action="{{ route('password.confirm') }}">
-        @csrf
+            <div class="border border-gm-gray-line bg-white p-6 sm:p-8">
+                <p class="text-sm text-gm-charcoal">
+                    Cette action nécessite une confirmation de sécurité. Merci de saisir à nouveau
+                    votre mot de passe pour continuer.
+                </p>
 
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
+                <form method="POST" action="{{ route('password.confirm') }}" class="mt-6 space-y-5">
+                    @csrf
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+                    <div>
+                        <label for="password" class="gm-meta block mb-2">Mot de passe <span class="text-gm-red">*</span></label>
+                        <input id="password" name="password" type="password" required autofocus autocomplete="current-password"
+                               class="w-full border border-gm-gray-line bg-white px-4 py-3 text-gm-ink focus:border-gm-red focus:outline-none focus:ring-0" />
+                        @error('password')<p class="gm-meta mt-2 text-gm-red">{{ $message }}</p>@enderror
+                    </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                    <button type="submit" class="gm-btn-primary w-full">Confirmer</button>
+                </form>
+            </div>
         </div>
-
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+    </section>
+</x-layouts.public>

@@ -7,6 +7,7 @@ namespace App\Livewire\Admin\Newsletter;
 use App\Jobs\SendCampaignJob;
 use App\Models\Campaign;
 use App\Models\Newsletter;
+use App\Models\NewsletterSubscription;
 use Illuminate\Contracts\View\View;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
@@ -51,7 +52,7 @@ class CampaignList extends Component
     public function kpis(): array
     {
         return [
-            'subscribers' => \App\Models\NewsletterSubscription::query()->confirmed()->count(),
+            'subscribers' => NewsletterSubscription::query()->confirmed()->count(),
             'campaigns_sent' => Campaign::where('status', 'sent')->count(),
             'drafts' => Campaign::where('status', 'draft')->count(),
         ];
@@ -63,6 +64,7 @@ class CampaignList extends Component
         $campaign = Campaign::findOrFail($campaignId);
         if (! $campaign->isDraft()) {
             session()->flash('status', 'Campagne déjà envoyée ou en cours.');
+
             return;
         }
 

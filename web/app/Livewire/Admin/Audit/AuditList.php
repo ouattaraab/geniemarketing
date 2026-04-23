@@ -80,6 +80,7 @@ class AuditList extends Component
     private function neutraliseCsvFormula(mixed $value): string
     {
         $str = (string) ($value ?? '');
+
         return preg_match("/^[=+\-@\t\r]/", $str) ? "'".$str : $str;
     }
 

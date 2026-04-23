@@ -7,6 +7,7 @@ use App\Http\Middleware\EnsureBackofficeUser;
 use App\Http\Middleware\RequireTwoFactor;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\VerifyPaystackWebhookIp;
+use App\Http\Middleware\VerifyWaveWebhookIp;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -44,6 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'backoffice' => EnsureBackofficeUser::class,
             '2fa' => RequireTwoFactor::class,
             'paystack.ip' => VerifyPaystackWebhookIp::class,
+            'wave.ip' => VerifyWaveWebhookIp::class,
             'role' => RoleMiddleware::class,
         ]);
 

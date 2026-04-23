@@ -70,8 +70,10 @@ class MediaManager
             $real = $file->getRealPath();
             if (is_string($real) && is_readable($real)) {
                 $size = @filesize($real);
+
                 return is_int($size) ? $size : 0;
             }
+
             return 0;
         }
     }

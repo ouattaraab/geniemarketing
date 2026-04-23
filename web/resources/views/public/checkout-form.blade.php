@@ -190,8 +190,8 @@
                     </button>
 
                     <p class="gm-meta mt-4 text-center text-[10px] normal-case tracking-normal">
-                        Vous serez redirigé vers <strong>Paystack</strong> pour le paiement sécurisé.<br>
-                        Cartes · Mobile Money (Orange, MTN, Moov) · Virement
+                        Vous serez redirigé vers <strong>Wave</strong> pour le paiement sécurisé.<br>
+                        Mobile Money Orange · MTN · Moov · Wave
                     </p>
                 </div>
 
