@@ -51,12 +51,14 @@
                         ['Commentaires', 'admin.comments.index', '💬', $pendingComments > 0 ? $pendingComments : null, ['chef', 'edit', 'adm', 'sup']],
                     ],
                     'Commercial' => [
+                        ['Formules', 'admin.plans.index', '💳', null, ['com', 'adm', 'sup']],
                         ['Abonnés', 'admin.subscribers.index', '👥', null, ['com', 'adm', 'sup']],
                         ['Commandes', 'admin.orders.index', '🧾', null, ['com', 'adm', 'sup']],
                         ['Newsletter', 'admin.newsletters.index', '📬', null, ['com', 'adm', 'sup']],
                     ],
                     'Système' => [
                         ['Utilisateurs', 'admin.users.index', '👤', null, ['adm', 'sup']],
+                        ['Moyens de paiement', 'admin.payment-methods.index', '🔌', null, ['adm', 'sup']],
                         ['Audit', 'admin.audit.index', '📋', null, ['adm', 'sup']],
                         ['Paramètres', 'admin.settings.index', '⚙️', null, ['adm', 'sup']],
                     ],

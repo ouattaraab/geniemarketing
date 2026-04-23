@@ -7,7 +7,10 @@ use App\Livewire\Admin\Articles\ArticleEditor;
 use App\Livewire\Admin\Articles\ArticleList;
 use App\Livewire\Admin\Audit\AuditList;
 use App\Livewire\Admin\Commerce\OrderList;
+use App\Livewire\Admin\Commerce\PlanEditor;
+use App\Livewire\Admin\Commerce\PlanList;
 use App\Livewire\Admin\Commerce\SubscriptionList;
+use App\Livewire\Admin\Settings\PaymentMethodsList;
 use App\Livewire\Admin\Magazine\IssueEditor;
 use App\Livewire\Admin\Magazine\IssueList;
 use App\Livewire\Admin\Media\MediaLibrary;
@@ -52,6 +55,9 @@ Route::prefix('admin')
         Route::middleware('role:com|adm|sup')->group(function (): void {
             Route::get('/abonnes', SubscriptionList::class)->name('subscribers.index');
             Route::get('/commandes', OrderList::class)->name('orders.index');
+            Route::get('/formules', PlanList::class)->name('plans.index');
+            Route::get('/formules/nouvelle', PlanEditor::class)->name('plans.create');
+            Route::get('/formules/{plan}/editer', PlanEditor::class)->name('plans.edit');
             Route::get('/newsletters', CampaignList::class)->name('newsletters.index');
             Route::get('/newsletters/nouveau', CampaignEditor::class)->name('newsletters.create');
             Route::get('/newsletters/{campaign}/editer', CampaignEditor::class)->name('newsletters.edit');
@@ -70,5 +76,6 @@ Route::prefix('admin')
             Route::get('/utilisateurs/{user}/editer', UserEditor::class)->name('users.edit');
             Route::get('/audit', AuditList::class)->name('audit.index');
             Route::get('/parametres', SettingsEditor::class)->name('settings.index');
+            Route::get('/moyens-paiement', PaymentMethodsList::class)->name('payment-methods.index');
         });
     });

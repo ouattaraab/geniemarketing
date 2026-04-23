@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
             EditorialCategorySeeder::class,
             DemoArticleSeeder::class,
             SubscriptionPlanSeeder::class,
+            PaymentMethodSeeder::class,
             NewsletterSeeder::class,
             SettingSeeder::class,
         ]);

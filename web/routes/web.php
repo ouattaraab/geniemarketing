@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\PaystackWebhookController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WaveWebhookController;
 use App\Http\Controllers\Public\ArticleController;
 use App\Http\Controllers\Public\CategoryController;
 use App\Http\Controllers\Public\CheckoutController;
@@ -61,10 +62,10 @@ Route::get('/newsletter/desinscription/{token}', [\App\Http\Controllers\Public\N
 
 /*
 |--------------------------------------------------------------------------
-| Paiement (Paystack)
+| Paiement (Wave Business — gateway principal)
 |--------------------------------------------------------------------------
 */
-// Tunnel d'abonnement : formulaire intermédiaire → paiement Paystack
+// Tunnel d'abonnement : formulaire intermédiaire → paiement Wave
 Route::get('/abonnement/{plan:code}/inscription', [CheckoutController::class, 'form'])
     ->name('checkout.form');
 Route::post('/abonnement/{plan:code}/inscription', [CheckoutController::class, 'process'])
@@ -74,7 +75,7 @@ Route::post('/abonnement/{plan:code}/inscription', [CheckoutController::class, '
 Route::get('/paiement/callback', [CheckoutController::class, 'callback'])
     ->name('checkout.callback');
 
-// Simulateur local : stand-in pour le hosted checkout Paystack en dev
+// Simulateur local : stand-in pour le hosted checkout en dev (Wave/Paystack)
 if (! app()->environment('production')) {
     Route::get('/paiement/simulateur/{reference}', [\App\Http\Controllers\Public\CheckoutSimulatorController::class, 'show'])
         ->name('checkout.simulator');
@@ -82,6 +83,11 @@ if (! app()->environment('production')) {
         ->name('checkout.simulator.submit');
 }
 
+Route::post('/webhooks/wave', WaveWebhookController::class)
+    ->middleware(['throttle:60,1', 'wave.ip'])
+    ->name('webhooks.wave');
+
+// Paystack conservé comme provider secondaire optionnel (PAYMENT_GATEWAY=paystack).
 Route::post('/webhooks/paystack', PaystackWebhookController::class)
     ->middleware(['throttle:60,1', 'paystack.ip'])
     ->name('webhooks.paystack');
@@ -110,6 +116,11 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // RGPD — export des données personnelles (art. 20 portabilité).
+    Route::get('/compte/mes-donnees/export', [\App\Http\Controllers\PrivacyController::class, 'export'])
+        ->middleware('throttle:3,10')
+        ->name('privacy.export');
 
     // 2FA (US-006)
     Route::get('/2fa/setup', [\App\Http\Controllers\Auth\TwoFactorController::class, 'setup'])->name('2fa.setup');
