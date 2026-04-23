@@ -210,7 +210,7 @@ class CheckoutController extends Controller
         }
 
         if ($order->status === OrderStatus::Paid) {
-            return redirect()->route('account')->with('status', 'Votre abonnement est actif. Bienvenue !');
+            return redirect()->route('account')->with('status', $this->paymentSuccessMessage($order));
         }
 
         try {
@@ -224,7 +224,7 @@ class CheckoutController extends Controller
         if ($verification->status->value === 'success') {
             $this->checkout->finalizeOrder($order, $verification->raw, $this->gateway->providerCode());
 
-            return redirect()->route('account')->with('status', 'Paiement confirmé — votre abonnement est actif !');
+            return redirect()->route('account')->with('status', $this->paymentSuccessMessage($order->fresh()));
         }
 
         if (in_array($verification->status->value, ['failed', 'abandoned', 'reversed'], true)) {
@@ -236,6 +236,25 @@ class CheckoutController extends Controller
         }
 
         return redirect()->route('subscribe')->with('status', 'Votre paiement est en cours de traitement. Vous recevrez un email à confirmation.');
+    }
+
+    /**
+     * Message flash à afficher après un paiement validé. L'achat article à
+     * l'unité ne donne accès qu'à *cet* article — il ne faut pas faire croire
+     * au client qu'il a débloqué tous les contenus comme un abonné.
+     */
+    private function paymentSuccessMessage(Order $order): string
+    {
+        if ($order->type === 'article') {
+            $title = (string) ($order->items[0]['article_title'] ?? 'l\'article');
+
+            return sprintf(
+                'Paiement confirmé — « %s » est désormais accessible dans « Mes articles achetés » (accès permanent).',
+                $title,
+            );
+        }
+
+        return 'Paiement confirmé — votre abonnement est actif !';
     }
 
     /**

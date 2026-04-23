@@ -1,4 +1,9 @@
 <x-layouts.public title="GÉNIE MARKETING Mag — La Une">
+    {{-- Bandeau publicitaire — haut de page d'accueil --}}
+    <div class="mx-auto max-w-container px-8 pt-6">
+        <x-gm.ad placement="home_leaderboard" />
+    </div>
+
     {{-- Hero La Une --}}
     <section class="mx-auto max-w-container px-8 py-16">
         <x-gm.section-heading number="01" subtitle="Mise à jour {{ \Carbon\Carbon::now()->locale('fr')->translatedFormat('l j F') }}">
@@ -17,17 +22,22 @@
         @endif
     </section>
 
-    {{-- Derniers articles --}}
+    {{-- Derniers articles (+ colonne publicitaire sur desktop) --}}
     @if ($latest->isNotEmpty())
         <section class="mx-auto max-w-container px-8 py-10">
             <x-gm.section-heading number="02">
                 Derniers articles
             </x-gm.section-heading>
 
-            <div class="grid gap-10 md:grid-cols-2">
-                @foreach ($latest as $article)
-                    <x-gm.article-card :article="$article" />
-                @endforeach
+            <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
+                <div class="grid gap-10 md:grid-cols-2">
+                    @foreach ($latest as $article)
+                        <x-gm.article-card :article="$article" />
+                    @endforeach
+                </div>
+                <aside class="lg:sticky lg:top-8 lg:self-start">
+                    <x-gm.ad placement="home_sidebar" />
+                </aside>
             </div>
         </section>
     @endif

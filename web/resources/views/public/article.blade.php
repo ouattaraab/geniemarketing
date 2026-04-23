@@ -68,6 +68,14 @@
             </figure>
         @endif
 
+        {{-- Bloc publicitaire en colonne — flotte à droite du body sur desktop --}}
+        <div class="clearfix mt-10">
+            <x-gm.ad
+                placement="article_sidebar"
+                class="lg:float-right lg:ml-8 lg:mb-4 lg:w-64"
+            />
+        </div>
+
         {{-- Contenu --}}
         <div class="prose prose-lg prose-slate mt-10 max-w-none font-sans text-gm-ink">
             @php

@@ -127,3 +127,25 @@ it('autorise registered access_level à tout utilisateur connecté', function ()
     expect($article->isAccessibleBy(null))->toBeFalse();
     expect($article->isAccessibleBy($user))->toBeTrue();
 });
+
+it('un AccessRight sur un article ne débloque pas les autres articles', function (): void {
+    // Règle produit : l'achat à l'unité donne un accès permanent MAIS
+    // **uniquement** à l'article acheté. Aucun débordement vers les autres
+    // articles (ni subscriber, ni premium payants), sauf si l'utilisateur
+    // prend un abonnement en plus.
+    $bought = makeArticle(ArticleAccessLevel::Premium, $this->category);
+    $otherPremium = makeArticle(ArticleAccessLevel::Premium, $this->category);
+    $otherSubscriber = makeArticle(ArticleAccessLevel::Subscriber, $this->category);
+
+    $user = User::factory()->create(['type' => 'subscriber', 'status' => 'active']);
+    $user->accessRights()->create([
+        'article_id' => $bought->id,
+        'source' => 'purchase',
+        'granted_at' => now(),
+        'expires_at' => null,
+    ]);
+
+    expect($bought->fresh()->isAccessibleBy($user->fresh()))->toBeTrue();
+    expect($otherPremium->fresh()->isAccessibleBy($user->fresh()))->toBeFalse();
+    expect($otherSubscriber->fresh()->isAccessibleBy($user->fresh()))->toBeFalse();
+});

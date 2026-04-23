@@ -63,18 +63,23 @@ class FakePaymentGateway implements PaymentGateway
 
         $order = Order::where('reference', $reference)->first();
 
+        // Même session id qu'à initialize() : en prod Wave renvoie le même
+        // `cos-XXX` à l'init et au verify/webhook, et CheckoutService (H1)
+        // refuse le callback si les deux diffèrent.
+        $sessionId = 'fake_session_'.substr(md5($reference), 0, 12);
+
         return new PaymentVerification(
             reference: $reference,
             status: $status,
             amountCents: $order?->total_cents ?? 0,
             currency: $order?->currency ?? 'XOF',
             channel: 'mobile_money',
-            transactionId: 'fake_txn_'.time(),
+            transactionId: $sessionId,
             failureReason: $status === PaymentStatus::Success ? null : 'Simulé — '.$outcome,
             raw: [
                 'status' => $outcome,
                 'reference' => $reference,
-                'id' => 'fake_txn_'.time(),
+                'id' => $sessionId,
                 'amount' => $order?->total_cents ?? 0,
                 'currency' => $order?->currency ?? 'XOF',
                 'channel' => 'mobile_money',
