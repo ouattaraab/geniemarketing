@@ -7,6 +7,9 @@
 >
     <article class="mx-auto max-w-container-narrow px-8 py-16">
 
+        {{-- Bannière publicitaire — haut de l'article --}}
+        <x-gm.ad placement="article_top" class="mb-8" />
+
         {{-- Métadonnées --}}
         <div class="mb-6 flex items-center gap-3">
             <a href="{{ route('category.show', $article->category) }}"
@@ -82,24 +85,63 @@
                         $previewDoc = ['type' => 'doc', 'content' => array_slice($body['content'], 0, $n)];
                     }
                     $previewHtml = $renderer->toHtml($previewDoc);
+                    $isPurchasable = $article->isPurchasable();
+                    $priceLabel = $isPurchasable
+                        ? number_format($article->price_cents / 100, 0, ',', ' ').' '.$article->price_currency
+                        : null;
                 @endphp
                 {!! $previewHtml !!}
 
-                <div class="mt-10 border-y-2 border-gm-ink bg-white p-8 text-center not-prose">
-                    <span class="font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-gm-red">Article réservé aux abonnés</span>
-                    <h3 class="mt-3 font-slab text-2xl font-bold italic text-gm-ink md:text-3xl">
-                        Lisez la suite avec l'abonnement GM
-                    </h3>
-                    <p class="mt-3 text-gm-charcoal">
-                        Accédez à tous les articles premium, aux numéros PDF et à la newsletter réservée aux abonnés.
-                    </p>
-                    <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-                        <a href="{{ route('subscribe') }}" class="gm-btn-primary">S'abonner à partir de 24 000 FCFA/an</a>
+                @if ($isPurchasable)
+                    {{-- Paywall spécifique : article payant à l'unité --}}
+                    <div class="mt-10 border-y-2 border-gm-red bg-white p-8 text-center not-prose">
+                        <span class="font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-gm-red">Article premium — accès à la demande</span>
+                        <h3 class="mt-3 font-slab text-2xl font-bold italic text-gm-ink md:text-3xl">
+                            Débloquer cet article pour <span class="text-gm-red">{{ $priceLabel }}</span>
+                        </h3>
+                        <p class="mt-3 text-gm-charcoal">
+                            Accès permanent à cet article, relisable depuis votre espace « Mon compte ».
+                        </p>
+                        <div class="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                            <form method="POST" action="{{ route('article.buy', $article) }}">
+                                @csrf
+                                <button type="submit" class="gm-btn-primary">
+                                    @auth
+                                        Payer {{ $priceLabel }} avec Wave
+                                    @else
+                                        Créer un compte et acheter ({{ $priceLabel }})
+                                    @endauth
+                                </button>
+                            </form>
+                            <span class="gm-meta">ou</span>
+                            <a href="{{ route('subscribe') }}" class="gm-meta normal-case tracking-normal text-gm-ink underline hover:text-gm-red">
+                                S'abonner à l'illimité à partir de 24 000 FCFA/an
+                            </a>
+                        </div>
                         @guest
-                            <a href="{{ route('login') }}" class="gm-meta hover:text-gm-red">Déjà abonné ? Se connecter</a>
+                            <p class="gm-meta mt-4 normal-case tracking-normal text-gm-gray">
+                                Déjà un compte ? <a href="{{ route('login') }}" class="underline hover:text-gm-red">Se connecter</a>.
+                            </p>
                         @endguest
                     </div>
-                </div>
+                @else
+                    {{-- Paywall abonnement standard --}}
+                    <div class="mt-10 border-y-2 border-gm-ink bg-white p-8 text-center not-prose">
+                        <span class="font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-gm-red">Article réservé aux abonnés</span>
+                        <h3 class="mt-3 font-slab text-2xl font-bold italic text-gm-ink md:text-3xl">
+                            Lisez la suite avec l'abonnement GM
+                        </h3>
+                        <p class="mt-3 text-gm-charcoal">
+                            Accédez à tous les articles premium, aux numéros PDF et à la newsletter réservée aux abonnés.
+                        </p>
+                        <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+                            <a href="{{ route('subscribe') }}" class="gm-btn-primary">S'abonner à partir de 24 000 FCFA/an</a>
+                            @guest
+                                <a href="{{ route('login') }}" class="gm-meta hover:text-gm-red">Déjà abonné ? Se connecter</a>
+                            @endguest
+                        </div>
+                    </div>
+                @endif
             @else
                 @if (! empty($freemiumBonus))
                     <div class="mb-6 border border-gm-red bg-gm-red-soft px-4 py-3 not-prose">
@@ -132,6 +174,9 @@
 
             <x-gm.share-buttons :article="$article" />
         </div>
+
+        {{-- Bannière publicitaire — bas de l'article --}}
+        <x-gm.ad placement="article_bottom" class="mt-10" />
     </article>
 
     {{-- Commentaires --}}

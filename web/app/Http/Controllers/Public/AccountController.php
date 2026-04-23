@@ -26,10 +26,19 @@ class AccountController extends Controller
             ->limit(20)
             ->get();
 
+        // Articles achetés à l'unité (AccessRight source=purchase, non expiré).
+        $purchasedArticles = $user->accessRights()
+            ->with(['article.category'])
+            ->where('source', 'purchase')
+            ->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
+            ->latest('granted_at')
+            ->get();
+
         return view('public.account', [
             'user' => $user,
             'activeSubscription' => $activeSubscription,
             'orders' => $orders,
+            'purchasedArticles' => $purchasedArticles,
         ]);
     }
 }

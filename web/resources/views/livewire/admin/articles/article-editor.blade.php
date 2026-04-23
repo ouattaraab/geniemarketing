@@ -162,12 +162,30 @@
                 @endif
 
                 <label class="gm-meta mt-4 block mb-2">Niveau d'accès</label>
-                <select wire:model="accessLevel" class="w-full border border-gm-gray-line px-3 py-2 font-sans text-sm focus:border-gm-red focus:ring-0">
+                <select wire:model.live="accessLevel" class="w-full border border-gm-gray-line px-3 py-2 font-sans text-sm focus:border-gm-red focus:ring-0">
                     <option value="free">Libre — tous les visiteurs</option>
                     <option value="registered">Inscrits (compte gratuit)</option>
                     <option value="subscriber">Abonnés Digital / Combo</option>
-                    <option value="premium">Premium (achat à l'unité)</option>
+                    <option value="premium">Premium (abonné OU achat à l'unité)</option>
                 </select>
+
+                @if ($accessLevel === 'premium')
+                    <div class="mt-4 border border-gm-red-soft bg-gm-red-soft/50 p-3">
+                        <label class="gm-meta block mb-2">Prix à l'unité (0 = non vendable, uniquement inclus dans l'abonnement)</label>
+                        <div class="flex gap-2">
+                            <input type="number" min="0" max="10000000" wire:model="price"
+                                   class="flex-1 border border-gm-gray-line px-3 py-2 font-sans text-sm focus:border-gm-red focus:ring-0"
+                                   placeholder="Ex. 500" />
+                            <input type="text" maxlength="3" wire:model="priceCurrency"
+                                   class="w-20 border border-gm-gray-line px-3 py-2 font-mono text-sm uppercase focus:border-gm-red focus:ring-0"
+                                   placeholder="XOF" />
+                        </div>
+                        @error('price')<p class="gm-meta mt-2 text-gm-red">{{ $message }}</p>@enderror
+                        <p class="gm-meta mt-2 normal-case tracking-normal text-gm-gray">
+                            Si &gt; 0 : les visiteurs non abonnés pourront l'acheter à l'unité. L'article reste inclus dans l'abonnement.
+                        </p>
+                    </div>
+                @endif
 
                 <label class="gm-meta mt-4 block mb-2">Temps de lecture (min)</label>
                 <input type="number" wire:model="readingTime" min="1" max="120" class="w-full border border-gm-gray-line px-3 py-2 font-sans text-sm focus:border-gm-red focus:ring-0" />

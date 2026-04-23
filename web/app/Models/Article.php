@@ -68,6 +68,8 @@ class Article extends Model
         'canonical_url',
         'status',
         'access_level',
+        'price_cents',
+        'price_currency',
         'is_sponsored',
         'sponsor_name',
         'scheduled_at',
@@ -82,6 +84,7 @@ class Article extends Model
             'body' => 'array',
             'status' => ArticleStatus::class,
             'access_level' => ArticleAccessLevel::class,
+            'price_cents' => 'integer',
             'is_sponsored' => 'boolean',
             'scheduled_at' => 'datetime',
             'published_at' => 'datetime',
@@ -200,5 +203,16 @@ class Article extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    /**
+     * Article payable à l'unité : access_level = premium ET price_cents > 0.
+     * Un article `premium` sans prix reste accessible via abonnement ou
+     * AccessRight offert/promo.
+     */
+    public function isPurchasable(): bool
+    {
+        return $this->access_level === ArticleAccessLevel::Premium
+            && (int) $this->price_cents > 0;
     }
 }

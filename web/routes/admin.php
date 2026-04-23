@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Livewire\Admin\Advertisements\AdEditor;
+use App\Livewire\Admin\Advertisements\AdList;
 use App\Livewire\Admin\Articles\ArticleEditor;
 use App\Livewire\Admin\Articles\ArticleList;
 use App\Livewire\Admin\Audit\AuditList;
@@ -61,6 +63,9 @@ Route::prefix('admin')
             Route::get('/newsletters', CampaignList::class)->name('newsletters.index');
             Route::get('/newsletters/nouveau', CampaignEditor::class)->name('newsletters.create');
             Route::get('/newsletters/{campaign}/editer', CampaignEditor::class)->name('newsletters.edit');
+            Route::get('/bannieres', AdList::class)->name('ads.index');
+            Route::get('/bannieres/nouvelle', AdEditor::class)->name('ads.create');
+            Route::get('/bannieres/{advertisement}/editer', AdEditor::class)->name('ads.edit');
         });
 
         // --- Modération : chef / edit / adm / sup ----------------------------

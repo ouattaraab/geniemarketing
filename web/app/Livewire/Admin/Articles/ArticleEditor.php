@@ -48,6 +48,10 @@ class ArticleEditor extends Component
 
     public string $accessLevel = 'subscriber';
 
+    public int $price = 0;                // en unité principale (XOF), 0 = gratuit
+
+    public string $priceCurrency = 'XOF';
+
     public ?string $metaTitle = null;
 
     public ?string $metaDescription = null;
@@ -97,6 +101,8 @@ class ArticleEditor extends Component
         $this->editorialCategoryId = $article->editorial_category_id;
         $this->status = $article->status->value;
         $this->accessLevel = $article->access_level->value;
+        $this->price = (int) round(($article->price_cents ?? 0) / 100);
+        $this->priceCurrency = $article->price_currency ?: 'XOF';
         $this->metaTitle = $article->meta_title;
         $this->metaDescription = $article->meta_description;
         $this->readingTime = $article->reading_time_minutes;
@@ -279,6 +285,8 @@ class ArticleEditor extends Component
             'editorialCategoryId' => ['nullable', 'exists:editorial_categories,id'],
             'status' => ['required', 'in:draft,review,scheduled,published,archived'],
             'accessLevel' => ['required', 'in:free,registered,subscriber,premium'],
+            'price' => ['required', 'integer', 'min:0', 'max:10000000'],
+            'priceCurrency' => ['required', 'string', 'size:3'],
             'readingTime' => ['nullable', 'integer', 'min:1', 'max:120'],
             'scheduledAt' => ['nullable', 'date'],
             'metaTitle' => ['nullable', 'string', 'max:255'],
@@ -332,6 +340,11 @@ class ArticleEditor extends Component
             'cover_media_id' => $this->coverMediaId,
             'status' => $validated['status'],
             'access_level' => $validated['accessLevel'],
+            // Prix à l'unité : pris en compte uniquement si access_level=premium.
+            // Sinon forcé à 0 pour qu'un article Free/Registered/Subscriber ne
+            // puisse pas afficher un prix par erreur.
+            'price_cents' => $validated['accessLevel'] === 'premium' ? (int) $validated['price'] * 100 : 0,
+            'price_currency' => strtoupper($validated['priceCurrency']),
             'meta_title' => $validated['metaTitle'] ?? null,
             'meta_description' => $validated['metaDescription'] ?? null,
             'reading_time_minutes' => $validated['readingTime'] ?? null,

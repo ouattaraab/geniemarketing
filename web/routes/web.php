@@ -7,7 +7,9 @@ use App\Http\Controllers\PaystackWebhookController;
 use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\AccountController;
+use App\Http\Controllers\Public\AdClickController;
 use App\Http\Controllers\Public\ArticleController;
+use App\Http\Controllers\Public\ArticlePurchaseController;
 use App\Http\Controllers\Public\CategoryController;
 use App\Http\Controllers\Public\CheckoutController;
 use App\Http\Controllers\Public\CheckoutSimulatorController;
@@ -47,6 +49,20 @@ Route::get('/rubriques/{category:slug}', [CategoryController::class, 'show'])->n
 Route::get('/recherche', SearchController::class)->name('search');
 
 Route::get('/articles/{article:slug}', [ArticleController::class, 'show'])->name('article.show');
+
+// Achat d'un article à l'unité (premium + prix > 0). Flow :
+//   visiteur → /login (intent mémorisé) → /register ou /login → reprise auto
+//   connecté → créateur d'Order → redirect Wave → callback existant
+Route::post('/articles/{article:slug}/acheter', [ArticlePurchaseController::class, 'buy'])
+    ->middleware(['throttle:10,1'])
+    ->name('article.buy');
+
+// Reprise de l'intent d'achat après login/register — GET volontaire car c'est une
+// continuation de flow métier déjà initié par l'utilisateur (side-effect voulu).
+Route::get('/compte/continuer-achat', [ArticlePurchaseController::class, 'continueIntent'])
+    ->middleware(['auth', 'throttle:10,1'])
+    ->name('article.intent_continue');
+
 Route::get('/magazine', [MagazineController::class, 'index'])->name('magazine');
 Route::middleware('auth')->group(function (): void {
     Route::get('/magazine/{issue:slug}/lecteur', [MagazineController::class, 'reader'])->name('magazine.reader');
@@ -55,6 +71,15 @@ Route::middleware('auth')->group(function (): void {
         ->name('magazine.pdf');
 });
 Route::get('/abonnement', [SubscribeController::class, 'index'])->name('subscribe');
+
+/*
+|--------------------------------------------------------------------------
+| Bannières publicitaires — tracking de clic
+|--------------------------------------------------------------------------
+*/
+Route::get('/pub/{advertisement}', AdClickController::class)
+    ->middleware(['throttle:120,1'])
+    ->name('ad.click');
 
 /*
 |--------------------------------------------------------------------------

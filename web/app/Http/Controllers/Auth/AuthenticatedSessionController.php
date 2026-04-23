@@ -29,6 +29,15 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Si un intent a été mémorisé avant login (ex. achat article à l'unité),
+        // on reprend le flow correspondant — l'user a cliqué « Acheter », on
+        // le redirige automatiquement vers la suite plutôt que vers /compte.
+        if ($intent = $request->session()->get('gm_intent')) {
+            if (($intent['type'] ?? null) === 'buy_article' && ! empty($intent['slug'])) {
+                return redirect()->route('article.intent_continue');
+            }
+        }
+
         return redirect()->intended($this->landingPathFor($request->user()));
     }
 

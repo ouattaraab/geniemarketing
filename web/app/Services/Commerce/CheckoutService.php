@@ -8,6 +8,8 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\SubscriptionStatus;
 use App\Mail\SubscriptionConfirmed;
+use App\Models\AccessRight;
+use App\Models\Article;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\Payment;
@@ -26,6 +28,60 @@ class CheckoutService
 {
     /** Taux de TVA applicable en Côte d'Ivoire (0% pour les services numériques pour MVP — à affiner avec l'expert-comptable). */
     private const TAX_RATE_CENTS = 0;
+
+    /**
+     * Crée une commande pour l'achat d'un article à l'unité (access_level=premium
+     * + price_cents > 0). L'article sera accessible via AccessRight après
+     * finalisation du paiement.
+     */
+    public function createOrderForArticle(User $user, Article $article, ?string $provider = 'wave'): Order
+    {
+        if (! $article->isPurchasable()) {
+            throw new \RuntimeException("L'article « {$article->title} » n'est pas disponible à l'achat unitaire.");
+        }
+
+        return DB::transaction(function () use ($user, $article, $provider): Order {
+            $reference = $this->uniqueReference();
+            $priceCents = (int) $article->price_cents;
+
+            $order = Order::create([
+                'reference' => $reference,
+                'user_id' => $user->id,
+                'subscription_plan_id' => null,
+                'type' => 'article',
+                'status' => OrderStatus::Pending,
+                'subtotal_cents' => $priceCents,
+                'discount_cents' => 0,
+                'tax_cents' => 0,
+                'total_cents' => $priceCents,
+                'currency' => $article->price_currency ?: 'XOF',
+                'items' => [[
+                    'type' => 'article',
+                    'article_id' => $article->id,
+                    'article_slug' => $article->slug,
+                    'article_title' => $article->title,
+                    'unit_price_cents' => $priceCents,
+                    'quantity' => 1,
+                ]],
+                'billing_address' => [
+                    'name' => $user->fullName(),
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                ],
+            ]);
+
+            Payment::create([
+                'order_id' => $order->id,
+                'provider' => $provider ?? 'wave',
+                'provider_reference' => $reference,
+                'status' => PaymentStatus::Pending,
+                'amount_cents' => $order->total_cents,
+                'currency' => $order->currency,
+            ]);
+
+            return $order->fresh();
+        });
+    }
 
     public function createOrderForPlan(User $user, SubscriptionPlan $plan, ?string $provider = 'wave'): Order
     {
@@ -82,17 +138,24 @@ class CheckoutService
      *  - émet une Invoice
      * Idempotent : si déjà traité, retourne la subscription existante.
      */
-    public function finalizeOrder(Order $order, array $providerData, string $provider = 'wave'): Subscription
+    public function finalizeOrder(Order $order, array $providerData, string $provider = 'wave'): Subscription|AccessRight
     {
-        return DB::transaction(function () use ($order, $providerData, $provider): Subscription {
+        return DB::transaction(function () use ($order, $providerData, $provider): Subscription|AccessRight {
             // Verrou pessimiste : évite qu'un webhook et le callback
             // user-agent finalisent la même commande en parallèle
-            // (double subscription / double invoice).
+            // (double subscription / double access right / double invoice).
             $order = Order::where('id', $order->id)->lockForUpdate()->firstOrFail();
 
             // Idempotence — déjà traité par un autre appel.
-            if ($order->status === OrderStatus::Paid && $order->subscription) {
-                return $order->subscription;
+            if ($order->status === OrderStatus::Paid) {
+                if ($order->type === 'article') {
+                    $existing = AccessRight::where('order_id', $order->id)->first();
+                    if ($existing) {
+                        return $existing;
+                    }
+                } elseif ($order->subscription) {
+                    return $order->subscription;
+                }
             }
 
             // Defense-in-depth : même si la signature HMAC du webhook est
@@ -151,6 +214,11 @@ class CheckoutService
             $order->status = OrderStatus::Paid;
             $order->paid_at = now();
             $order->save();
+
+            // Dispatch : achat d'article à l'unité OU abonnement classique.
+            if ($order->type === 'article') {
+                return $this->finalizeArticlePurchase($order);
+            }
 
             $plan = $order->plan;
             $sub = Subscription::create([
@@ -236,6 +304,58 @@ class CheckoutService
             $order->status = OrderStatus::Failed;
             $order->save();
         });
+    }
+
+    /**
+     * Finalisation d'une commande de type 'article' — crée l'AccessRight qui
+     * autorise l'utilisateur à consulter l'article acheté, émet la facture.
+     * Appelé depuis `finalizeOrder` après validation montant/devise/session id.
+     */
+    private function finalizeArticlePurchase(Order $order): AccessRight
+    {
+        $articleId = (int) ($order->items[0]['article_id'] ?? 0);
+        if ($articleId === 0) {
+            throw new \RuntimeException('Order type=article sans article_id dans items[].');
+        }
+
+        $article = Article::find($articleId);
+        if ($article === null) {
+            throw new \RuntimeException("Article #{$articleId} introuvable lors de la finalisation.");
+        }
+
+        // AccessRight unique par (user, article) — on met à jour si déjà
+        // présent (cas rare : achat après un cadeau / promo).
+        $accessRight = AccessRight::updateOrCreate(
+            ['user_id' => $order->user_id, 'article_id' => $article->id],
+            [
+                'order_id' => $order->id,
+                'source' => 'purchase',
+                'granted_at' => now(),
+                'expires_at' => null, // achat permanent
+            ],
+        );
+
+        // Active l'utilisateur s'il était pending.
+        $user = $order->user;
+        if ($user && $user->status === 'pending') {
+            $user->status = 'active';
+            $user->save();
+        }
+
+        // Facture — même logique que pour un abonnement.
+        Invoice::create([
+            'order_id' => $order->id,
+            'subscription_id' => null,
+            'number' => Invoice::generateNumber(),
+            'amount_ht_cents' => $order->subtotal_cents - $order->discount_cents,
+            'tax_cents' => $order->tax_cents,
+            'amount_ttc_cents' => $order->total_cents,
+            'currency' => $order->currency,
+            'billing_snapshot' => $order->billing_address,
+            'issued_at' => now(),
+        ]);
+
+        return $accessRight;
     }
 
     private function mapChannel(?string $channel): string

@@ -54,6 +54,7 @@
                         ['Formules', 'admin.plans.index', '💳', null, ['com', 'adm', 'sup']],
                         ['Abonnés', 'admin.subscribers.index', '👥', null, ['com', 'adm', 'sup']],
                         ['Commandes', 'admin.orders.index', '🧾', null, ['com', 'adm', 'sup']],
+                        ['Bannières pub', 'admin.ads.index', '📣', null, ['com', 'adm', 'sup']],
                         ['Newsletter', 'admin.newsletters.index', '📬', null, ['com', 'adm', 'sup']],
                     ],
                     'Système' => [

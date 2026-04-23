@@ -48,6 +48,13 @@ class RegisteredUserController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
+        // Reprise de l'intent posé avant inscription (ex. achat article à l'unité).
+        if ($intent = $request->session()->get('gm_intent')) {
+            if (($intent['type'] ?? null) === 'buy_article' && ! empty($intent['slug'])) {
+                return redirect()->route('article.intent_continue');
+            }
+        }
+
         return redirect(route('dashboard', absolute: false));
     }
 }

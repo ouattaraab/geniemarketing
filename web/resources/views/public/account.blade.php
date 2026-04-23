@@ -52,6 +52,35 @@
             @endif
         </div>
 
+        {{-- Articles achetés à l'unité --}}
+        @if ($purchasedArticles->isNotEmpty())
+            <div class="mb-12">
+                <h3 class="font-slab text-xl font-bold italic text-gm-ink mb-4">Mes articles achetés</h3>
+                <div class="grid gap-4 md:grid-cols-2">
+                    @foreach ($purchasedArticles as $ar)
+                        @php $art = $ar->article; @endphp
+                        @if ($art)
+                            <a href="{{ route('article.show', $art) }}"
+                               class="group block border border-gm-gray-line bg-white p-5 transition-colors hover:border-gm-red">
+                                <span class="gm-meta text-gm-red">{{ $art->category?->name ?? '—' }}</span>
+                                <h4 class="mt-2 font-slab text-lg font-bold italic text-gm-ink group-hover:text-gm-red">
+                                    {{ $art->title }}
+                                </h4>
+                                <p class="gm-meta mt-2 normal-case tracking-normal text-gm-gray">
+                                    Acheté le {{ $ar->granted_at->locale('fr')->translatedFormat('j F Y') }}
+                                    @if ($ar->expires_at)
+                                        · valide jusqu'au {{ $ar->expires_at->locale('fr')->translatedFormat('j F Y') }}
+                                    @else
+                                        · accès permanent
+                                    @endif
+                                </p>
+                            </a>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         {{-- Historique des commandes --}}
         <div class="mb-12">
             <h3 class="font-slab text-xl font-bold italic text-gm-ink mb-4">Historique des commandes</h3>
