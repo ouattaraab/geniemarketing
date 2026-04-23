@@ -129,11 +129,12 @@ PROCHAINES ÉTAPES
 
 3. SSH sur le serveur (ou Terminal hPanel) :
      cp geniemag-app/.env.example geniemag-app/.env
-     nano geniemag-app/.env       # renseigner DB, MAIL, PAYSTACK, etc.
+     nano geniemag-app/.env       # renseigner DB, MAIL, WAVE_*, TRUSTED_PROXIES…
      cd geniemag-app
      php artisan key:generate
      php artisan migrate --force
-     php artisan db:seed --class=RoleSeeder --force
+     # Seed complet : rôles, plans, moyens de paiement (Wave actif), newsletters, settings légaux
+     php artisan db:seed --force
      php artisan storage:link
      php artisan config:cache
      php artisan route:cache
@@ -145,8 +146,19 @@ PROCHAINES ÉTAPES
 
 5. hPanel → Domains → SSL : activer Let's Encrypt + "Force HTTPS".
 
-6. Dashboard Paystack → Webhook : pointer sur
-   https://geniemag.ci/webhooks/paystack
+6. Dashboard Wave Business (https://business.wave.com/dev-portal) :
+   - Récupérer la clé API de prod (format wave_ci_prod_…) → WAVE_API_KEY.
+   - Créer un webhook : URL https://geniemag.ci/webhooks/wave,
+     événements checkout.session.completed + checkout.session.payment_failed.
+     Wave affiche UNE SEULE FOIS le webhook secret → WAVE_WEBHOOK_SECRET.
+
+7. /admin/parametres → groupe « Mentions légales » : renseigner RCCM, NIF,
+   Compte Contribuable, directeur de la publication avant ouverture publique.
+
+8. Changer le mot de passe du super admin (admin@geniemag.ci, défaut
+   ChangeMe!2026) via /admin/utilisateurs.
+
+9. php artisan gm:pre-launch — doit retourner 0 ✗.
 
 ────────────────────────────────────────────────────────────────────────────
 NEXT

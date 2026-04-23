@@ -91,10 +91,16 @@ ssh uXXXXXXXXX@geniemag.ci -p 65002   # port SSH Hostinger
 cd ~/geniemag-app
 cp .env.example .env
 nano .env
-# Remplir DB_PASSWORD, MAIL_PASSWORD, PAYSTACK_*, APP_KEY (laisser vide)
+# Remplir :
+#   - DB_PASSWORD, MAIL_PASSWORD (mots de passe forts)
+#   - APP_KEY (laisser vide → key:generate juste après)
+#   - WAVE_API_KEY (wave_ci_prod_… depuis business.wave.com/dev-portal)
+#   - WAVE_WEBHOOK_SECRET (affiché UNE SEULE FOIS à la création du webhook)
+#   - TRUSTED_PROXIES (voir §9 — Cloudflare CIDRs recommandé)
 php artisan key:generate
 php artisan migrate --force
-php artisan db:seed --class=Database\\Seeders\\RoleSeeder --force
+# Seed complet : rôles, plans, moyens de paiement (Wave actif), newsletters, settings légaux
+php artisan db:seed --force
 php artisan storage:link
 php artisan config:cache
 php artisan route:cache
@@ -104,7 +110,7 @@ php artisan event:cache
 
 ### Sans SSH (plan Premium)
 
-1. hPanel → *File Manager* → éditer `geniemag-app/.env.example`, renommer en `.env`, remplir les valeurs.
+1. hPanel → *File Manager* → éditer `geniemag-app/.env.example`, renommer en `.env`, remplir les valeurs (voir bloc SSH ci-dessus).
 2. `APP_KEY` : générer en local avec `cd web && php artisan key:generate --show`, copier la clé dans `.env`.
 3. Migrations : hPanel → *Databases* → *phpMyAdmin* → importer `database/migrations.sql` généré via
    ```bash
@@ -118,7 +124,7 @@ php artisan event:cache
    $app = require APP_BASE_PATH.'/bootstrap/app.php';
    $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
    $kernel->call('migrate --force');
-   $kernel->call('db:seed --class=Database\\Seeders\\RoleSeeder --force');
+   $kernel->call('db:seed --force'); // seed complet (rôles, plans, payment_methods, settings légaux)
    $kernel->call('storage:link');
    echo "OK";
    ```
@@ -138,13 +144,28 @@ hPanel → *Advanced* → *Cron Jobs* — ajouter deux entrées :
 
 > Le chemin `/usr/bin/php` peut varier selon la version PHP choisie. Vérifier avec `which php` en SSH.
 
-## 7. Webhook Paystack
+## 7. Webhook Wave Business
 
-Dashboard Paystack → *Settings* → *API Keys & Webhooks* :
+Dashboard Wave → <https://business.wave.com/dev-portal> → *Webhooks* :
 
-- URL : `https://geniemag.ci/webhooks/paystack`
-- Événements : `charge.success`, `charge.failed`
-- Tester avec le bouton *Send Test Webhook* — doit retourner `200 OK`.
+- URL : `https://geniemag.ci/webhooks/wave`
+- Événements : `checkout.session.completed`, `checkout.session.payment_failed`
+- Wave affiche le **webhook secret une seule fois** (format `whsec_…`) — le coller immédiatement dans `.env` → `WAVE_WEBHOOK_SECRET` puis `php artisan config:cache`.
+- Tester avec un paiement de 100 XOF depuis un téléphone Wave réel — doit marquer l'`Order` en `paid`, créer la `Subscription`, émettre l'`Invoice`, envoyer le mail `SubscriptionConfirmed`.
+
+> **Paystack** est conservé comme fallback activable via `/admin/moyens-paiement`. Si activé, son webhook pointe sur `/webhooks/paystack` (URL à configurer dans le dashboard Paystack).
+
+## 7 bis. Configurer les mentions légales
+
+Avant ouverture publique, dans `/admin/parametres` → groupe **« Mentions légales & juridique »** :
+
+- `legal.editor`, `legal.editor_form`, `legal.editor_capital`, `legal.editor_rccm`, `legal.editor_nif`, `legal.editor_cc` : identité de la société éditrice (telle qu'immatriculée au RCCM).
+- `legal.director` : directeur de la publication nommément désigné (loi 2017-867).
+- `legal.dpo_email` : Délégué à la Protection des Données (obligatoire RGPD / loi 2013-450).
+- `legal.host_*` : infos hébergeur (préremplies à Hostinger International Ltd.).
+- `legal.terms_updated_at`, `legal.privacy_updated_at`, `legal.mentions_updated_at`, `legal.cookies_updated_at` : dates affichées en pied de chaque page légale.
+
+Ces settings sont lus par `LegalController` pour rendre `/cgu`, `/confidentialite`, `/mentions-legales`, `/cookies`. Les tests `LegalPagesTest` vérifient que les valeurs apparaissent bien — ne pas laisser de `—`.
 
 ## 8. Déploiements suivants
 
@@ -174,21 +195,25 @@ hPanel → *Websites* → *Git* : connecter votre repo GitHub. hPanel fait un `g
 
 - [ ] `APP_ENV=production`, `APP_DEBUG=false`.
 - [ ] `APP_KEY` régénéré, distinct du dev.
-- [ ] `PAYSTACK_SECRET_KEY` = `sk_live_*` (jamais `sk_test_placeholder`).
-- [ ] `PAYSTACK_WEBHOOK_IPS` à jour depuis la [doc Paystack](https://paystack.com/docs/payments/webhooks/#ip-whitelisting).
-- [ ] `TRUSTED_PROXIES=*` (obligatoire derrière le LB Hostinger).
+- [ ] `WAVE_API_KEY` = `wave_ci_prod_*` (jamais `wave_test_placeholder`).
+- [ ] `WAVE_WEBHOOK_SECRET` = `whsec_*` collé depuis le dashboard Wave à la création du webhook.
+- [ ] `TRUSTED_PROXIES` explicite (pas `*` en prod). Si Cloudflare devant : [liste officielle des CIDRs](https://www.cloudflare.com/ips-v4/). Sans Cloudflare : laisser vide accepte l'IP observée — les preuves de consentement RGPD auront alors leur pleine valeur probatoire.
 - [ ] HTTPS forcé (hPanel + `.htaccess`). HSTS auto-délivré par SecurityHeaders.
 - [ ] `SENTRY_LARAVEL_DSN` configuré — les `Log::critical` (mismatch paiement) doivent remonter.
-- [ ] Test d'envoi mail : `make test-feature` en local + un envoi réel depuis le BO.
+- [ ] Mot de passe du super admin `admin@geniemag.ci` changé (pas `ChangeMe!2026`).
+- [ ] Settings légaux remplis dans `/admin/parametres` → section « Mentions légales » (RCCM, NIF, directeur de publication, etc.).
+- [ ] `php artisan gm:pre-launch` → 0 ✗ critique.
+- [ ] Test d'envoi mail : un envoi réel depuis le BO.
 - [ ] Backups DB réguliers : hPanel → *Files* → *Backups* + export manuel mensuel.
 
 ### Recommandé
 
-- [ ] Tests : `vendor/bin/pest` → 83/83 verts avant upload.
+- [ ] Tests : `vendor/bin/pest` → 105/105 verts avant upload.
 - [ ] `composer audit && npm audit` : aucun High/Critical.
 - [ ] Second compte `sup` avec 2FA active (ne pas dépendre d'un seul `admin@`).
 - [ ] Premiers articles, rubriques et numéros créés via le BO.
-- [ ] Test de bout-en-bout : inscription → paiement test Paystack → accès abonné.
+- [ ] Test de bout-en-bout : inscription → paiement réel Wave (100 XOF) → accès abonné → facture PDF téléchargée.
+- [ ] Smoke test RGPD : `/compte/mes-donnees/export` → JSON complet, `/profile` → suppression de compte anonymise bien.
 - [ ] Retention audit logs ≥ 6 mois — prune auto via `php artisan gm:audit:prune`.
 
 ## 10. Rollback
@@ -211,7 +236,7 @@ Puis `cd geniemag-app && php artisan config:cache route:cache view:cache && php 
 |---|---|---|
 | Queue temps réel | ⚠ Latence 5 min (cron) | Upgrade VPS si nécessaire |
 | Meilisearch | ❌ Scout `collection` | OK jusqu'à ~1000 articles |
-| Webhook volume | ⚠ OK mais throttle 60/min | OK pour Paystack |
+| Webhook volume | ⚠ OK mais throttle 60/min | OK pour Wave (trafic prévisible) |
 | MinIO / S3 | ❌ Stockage local `storage/app/public` | Backup S3 externe manuel |
 | Supervisor | ❌ Cron seulement | Accepter latence queue |
 | Déploiement atomique | ❌ Upload remplace fichiers | Accepter downtime < 5 s |
@@ -226,7 +251,9 @@ Si le volume atteint 10 000+ articles ou plusieurs centaines de paiements/jour, 
 | Page blanche après login | Cache de route obsolète | `php artisan route:cache` |
 | 403 sur `/admin/*` | Rôle BO non assigné | `php artisan db:seed RoleSeeder` |
 | 419 PAGE EXPIRED | `SESSION_DOMAIN` mal configuré | Mettre `.geniemag.ci` |
-| Paystack "invalid key" | clé test en prod | Basculer `sk_live_*` |
+| Wave `initialize failed (HTTP 401)` | clé test en prod ou clé expirée | Régénérer dans dashboard Wave |
+| Wave webhook `signature HMAC invalide` | `WAVE_WEBHOOK_SECRET` désynchronisé après rotation | Rotation du secret dans dashboard Wave + cache:clear |
+| Wave webhook `timestamp hors tolérance` | Horloge serveur décalée > 5 min | Vérifier NTP Hostinger, ticket support si dérive persistante |
 | Emails non reçus | SMTP bloqué | Vérifier SPF/DKIM hPanel → Emails |
 | Images uploadées absentes | `storage:link` pas exécuté | `php artisan storage:link` |
 | Queue en retard | Cron `queue:work` pas actif | Vérifier hPanel → Cron Jobs |
