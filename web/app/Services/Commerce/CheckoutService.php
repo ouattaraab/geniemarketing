@@ -120,8 +120,29 @@ class CheckoutService
                 ->latest('id')
                 ->firstOrFail();
 
+            // H1 — Vérification session id / transaction id : le payload reçu
+            // doit correspondre à l'intention persistée lors de l'init (cos-…
+            // pour Wave, id transaction pour Paystack). Sans cette vérif, un
+            // attaquant ayant obtenu un payload HMAC valide pourrait finaliser
+            // une autre order du même user au même montant (retries webhook
+            // mal redirigés, collisions pathologiques).
+            $receivedSessionId = (string) ($providerData['id'] ?? '');
+            $expectedSessionId = (string) ($payment->provider_transaction_id ?? '');
+            if ($expectedSessionId !== '' && $receivedSessionId !== ''
+                && ! hash_equals($expectedSessionId, $receivedSessionId)) {
+                \Illuminate\Support\Facades\Log::critical('Payment session id mismatch — refusé', [
+                    'order' => $order->reference,
+                    'expected_session_id' => $expectedSessionId,
+                    'received_session_id' => $receivedSessionId,
+                    'provider' => $provider,
+                ]);
+                throw new \RuntimeException('Session id du gateway incohérent avec le paiement initial.');
+            }
+
             $payment->status = PaymentStatus::Success;
-            $payment->provider_transaction_id = (string) ($providerData['id'] ?? $payment->provider_transaction_id);
+            $payment->provider_transaction_id = $receivedSessionId !== ''
+                ? $receivedSessionId
+                : $payment->provider_transaction_id;
             $payment->channel = $this->mapChannel($providerData['channel'] ?? null);
             $payment->raw_response = $providerData;
             $payment->captured_at = now();

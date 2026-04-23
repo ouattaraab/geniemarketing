@@ -33,7 +33,7 @@ it('exports all user data as JSON for an authenticated user', function (): void 
     $response = $this->actingAs($user)->get('/compte/mes-donnees/export');
 
     $response->assertStatus(200);
-    $response->assertHeader('Content-Type', 'application/json');
+    $response->assertHeader('Content-Type', 'application/json; charset=utf-8');
     $response->assertHeader('Content-Disposition', 'attachment; filename="gm-donnees-'.$user->id.'-'.now()->format('Y-m-d-His').'.json"');
 
     $json = $response->json();

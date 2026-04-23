@@ -124,6 +124,22 @@ it('refuse finalizeOrder si la devise ne matche pas (C3 audit)', function (): vo
     ]);
 })->throws(\RuntimeException::class, 'Montant ou devise');
 
+it('refuse finalizeOrder si le session id gateway ne matche pas celui persisté à l\'init (H1 audit)', function (): void {
+    $order = $this->service->createOrderForPlan($this->user, $this->plan, 'wave');
+    // Simule la persistance du session id à l'init (comme le fait CheckoutController::process)
+    $payment = $order->latestPayment;
+    $payment->provider_transaction_id = 'cos-REAL-SESSION';
+    $payment->save();
+
+    // Le webhook/callback arrive avec un session id DIFFÉRENT (rejeu / confusion) → refusé
+    $this->service->finalizeOrder($order, [
+        'id' => 'cos-OTHER-SESSION',     // session id différent
+        'reference' => $order->reference,
+        'amount' => $order->total_cents,
+        'currency' => $order->currency,
+    ], 'wave');
+})->throws(\RuntimeException::class, 'Session id du gateway incohérent');
+
 it('markFailed bascule Order + Payment en failed sur tentative non payée', function (): void {
     $order = $this->service->createOrderForPlan($this->user, $this->plan);
 

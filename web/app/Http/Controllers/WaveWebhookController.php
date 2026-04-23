@@ -47,10 +47,12 @@ class WaveWebhookController extends Controller
 
         $order = Order::where('reference', $payload->reference)->first();
         if ($order === null) {
-            // Référence inconnue : potentiel rejeu, fuite de clé ou bug Wave.
-            // On répond 202 pour éviter le retry loop côté Wave, mais on alerte
-            // en critical (Sentry doit remonter).
-            Log::critical('Wave webhook: order not found', [
+            // L4 — Référence inconnue : souvent un retry Wave sur une order
+            // déjà supprimée par un admin, ou une mauvaise redirection de
+            // webhook entre environnements. On log en warning (pas critical)
+            // pour éviter de flooder Sentry et on répond 202 Accepted —
+            // Wave n'active pas de retry sur cette réponse.
+            Log::warning('Wave webhook: order not found', [
                 'ref' => $payload->reference,
                 'event' => $payload->event,
                 'ip' => $request->ip(),

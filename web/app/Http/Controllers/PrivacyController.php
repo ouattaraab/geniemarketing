@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Services\Audit;
 use App\Services\Privacy\UserDataExporter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,7 +18,10 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class PrivacyController extends Controller
 {
-    public function __construct(private readonly UserDataExporter $exporter) {}
+    public function __construct(
+        private readonly UserDataExporter $exporter,
+        private readonly Audit $audit,
+    ) {}
 
     /**
      * GET /compte/mes-donnees/export
@@ -31,9 +34,17 @@ class PrivacyController extends Controller
         $user = $request->user();
         abort_unless($user !== null, 401);
 
-        Log::info('RGPD export requested', ['user_id' => $user->id, 'ip' => $request->ip()]);
-
         $data = $this->exporter->export($user);
+        $payload = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+        // M5 — trace opposable dans l'audit log en cas de compromission du
+        // compte (un attaquant qui exfiltre via session hijack laisse une
+        // ligne visible par l'équipe sécurité + le user peut la constater).
+        $this->audit->log('privacy.data_exported', $user, [
+            'ip' => $request->ip(),
+            'ua' => mb_substr((string) $request->userAgent(), 0, 255),
+            'size_bytes' => strlen($payload),
+        ]);
 
         $filename = sprintf(
             'gm-donnees-%s-%s.json',
@@ -41,11 +52,12 @@ class PrivacyController extends Controller
             now()->format('Y-m-d-His'),
         );
 
-        return response()->json($data, 200, [
+        return response($payload, 200, [
+            'Content-Type' => 'application/json; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
             'X-Content-Type-Options' => 'nosniff',
             'Cache-Control' => 'no-store, no-cache, must-revalidate, private',
             'Pragma' => 'no-cache',
-        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        ]);
     }
 }

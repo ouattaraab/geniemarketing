@@ -110,6 +110,10 @@ class PlanEditor extends Component
 
         if ($this->planId) {
             $plan = SubscriptionPlan::findOrFail($this->planId);
+            // M3 — code plan immuable après création, même si un rôle `com`
+            // tente de le modifier via un POST Livewire forgé. Le readonly
+            // UI est insuffisant — on ré-affirme côté serveur.
+            $payload['code'] = $plan->code;
             $plan->update($payload);
             app(Audit::class)->log('plan.updated', $plan, ['code' => $plan->code]);
         } else {
