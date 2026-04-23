@@ -20,10 +20,15 @@ class CampaignEditor extends Component
     public ?Campaign $campaign = null;
 
     public ?int $newsletterId = null;
+
     public string $subject = '';
+
     public string $preheader = '';
+
     public string $content = '';
+
     public string $ctaLabel = '';
+
     public string $ctaUrl = '';
 
     public function mount(?Campaign $campaign = null): void
@@ -99,6 +104,7 @@ class CampaignEditor extends Component
         $this->save();
         if (! $this->campaign->isDraft()) {
             session()->flash('status', 'Campagne déjà envoyée.');
+
             return;
         }
 

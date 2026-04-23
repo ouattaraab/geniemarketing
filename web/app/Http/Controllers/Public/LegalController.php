@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -92,7 +93,7 @@ class LegalController extends Controller
         }
 
         try {
-            return \Carbon\Carbon::parse($raw)->locale('fr')->translatedFormat('j F Y');
+            return Carbon::parse($raw)->locale('fr')->translatedFormat('j F Y');
         } catch (\Throwable) {
             return $raw;
         }

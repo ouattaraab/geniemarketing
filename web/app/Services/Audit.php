@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 class Audit
 {
     /**
-     * @param array<string, mixed> $context
+     * @param  array<string, mixed>  $context
      */
     public function log(string $action, ?Model $object = null, array $context = [], array $changes = []): void
     {

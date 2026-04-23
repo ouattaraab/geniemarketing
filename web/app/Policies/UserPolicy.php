@@ -56,6 +56,7 @@ class UserPolicy
         if ($user->hasRole('adm')) {
             return ['red', 'chef', 'edit', 'com', 'adm'];
         }
+
         return [];
     }
 

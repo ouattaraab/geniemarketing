@@ -2,15 +2,17 @@
 
 declare(strict_types=1);
 
+use App\Enums\OrderStatus;
 use App\Models\Consent;
+use App\Models\Order;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Couvre les droits RGPD côté utilisateur (portabilité + effacement).
  */
-
 beforeEach(function (): void {
     $this->seed(RoleSeeder::class);
 });
@@ -75,16 +77,16 @@ it('erases the account: anonymises PII but keeps orders for accounting (10y obli
         'first_name' => 'Alice',
         'last_name' => 'Martin',
         'phone' => '+2250987654321',
-        'password' => \Illuminate\Support\Facades\Hash::make('SecretPassword2026!'),
+        'password' => Hash::make('SecretPassword2026!'),
     ]);
 
     // Simule une commande passée (preuve comptable).
-    $order = \App\Models\Order::create([
+    $order = Order::create([
         'reference' => 'GM-TEST-ERASE-1',
         'user_id' => $user->id,
         'subscription_plan_id' => $plan->id,
         'type' => 'subscription',
-        'status' => \App\Enums\OrderStatus::Paid,
+        'status' => OrderStatus::Paid,
         'subtotal_cents' => $plan->price_cents,
         'discount_cents' => 0,
         'tax_cents' => 0,
@@ -101,7 +103,7 @@ it('erases the account: anonymises PII but keeps orders for accounting (10y obli
     $response->assertRedirect('/');
 
     // User soft-deleted et PII anonymisées
-    $raw = \DB::table('users')->where('id', $user->id)->first();
+    $raw = DB::table('users')->where('id', $user->id)->first();
     expect($raw->deleted_at)->not->toBeNull();
     expect($raw->first_name)->toBe('Utilisateur');
     expect($raw->last_name)->toBe('supprimé');
@@ -110,7 +112,7 @@ it('erases the account: anonymises PII but keeps orders for accounting (10y obli
     expect($raw->{'2fa_secret'})->toBeNull();
 
     // Order conservée pour obligation comptable, mais billing anonymisée.
-    $orderReloaded = \DB::table('orders')->where('reference', 'GM-TEST-ERASE-1')->first();
+    $orderReloaded = DB::table('orders')->where('reference', 'GM-TEST-ERASE-1')->first();
     expect($orderReloaded)->not->toBeNull();
     $billing = json_decode($orderReloaded->billing_address, true);
     expect($billing['name'])->toBe('Compte supprimé');

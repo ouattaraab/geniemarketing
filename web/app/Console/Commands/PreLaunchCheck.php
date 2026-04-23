@@ -12,6 +12,7 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 
@@ -46,6 +47,7 @@ class PreLaunchCheck extends Command
         $this->check('BD MySQL accessible', function (): bool {
             try {
                 DB::connection()->getPdo();
+
                 return true;
             } catch (\Throwable) {
                 return false;
@@ -68,7 +70,8 @@ class PreLaunchCheck extends Command
                 if ($sup === null) {
                     return true;
                 }
-                return ! \Illuminate\Support\Facades\Hash::check('ChangeMe!2026', $sup->password);
+
+                return ! Hash::check('ChangeMe!2026', $sup->password);
             },
             critical: true);
 
@@ -87,6 +90,7 @@ class PreLaunchCheck extends Command
         $this->check('Gateway de paiement configuré',
             function (): bool {
                 $default = (string) config('services.payment.default', 'wave');
+
                 return match ($default) {
                     'wave' => ! empty(config('services.wave.api_key'))
                         && ! str_starts_with((string) config('services.wave.api_key'), 'wave_test_placeholder')

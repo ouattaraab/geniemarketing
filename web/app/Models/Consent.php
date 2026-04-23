@@ -17,11 +17,15 @@ class Consent extends Model
     use HasFactory;
 
     public const DOC_TERMS = 'terms';
+
     public const DOC_PRIVACY = 'privacy';
+
     public const DOC_COOKIES = 'cookies';
+
     public const DOC_MARKETING = 'marketing';
 
     public const ACTION_GRANTED = 'granted';
+
     public const ACTION_REVOKED = 'revoked';
 
     protected $fillable = [

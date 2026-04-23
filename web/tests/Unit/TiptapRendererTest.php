@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Services\TiptapRenderer;
 
 beforeEach(function (): void {
-    $this->renderer = new TiptapRenderer();
+    $this->renderer = new TiptapRenderer;
 });
 
 it('renvoie chaîne vide pour doc null', function (): void {

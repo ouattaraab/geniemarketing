@@ -14,7 +14,6 @@ use Database\Seeders\SettingSeeder;
  * ces tests — c'est voulu : on protège l'éditeur contre la régression
  * juridique silencieuse.
  */
-
 beforeEach(function (): void {
     $this->seed(SettingSeeder::class);
 });

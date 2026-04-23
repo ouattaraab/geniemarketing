@@ -103,7 +103,7 @@ class CheckoutService
             $receivedAmount = (int) ($providerData['amount'] ?? -1);
             $receivedCurrency = strtoupper((string) ($providerData['currency'] ?? ''));
             if ($receivedAmount !== $order->total_cents || $receivedCurrency !== strtoupper($order->currency)) {
-                \Illuminate\Support\Facades\Log::critical('Payment amount/currency mismatch — refusé', [
+                Log::critical('Payment amount/currency mismatch — refusé', [
                     'order' => $order->reference,
                     'expected_amount_cents' => $order->total_cents,
                     'received_amount_cents' => $receivedAmount,
@@ -130,7 +130,7 @@ class CheckoutService
             $expectedSessionId = (string) ($payment->provider_transaction_id ?? '');
             if ($expectedSessionId !== '' && $receivedSessionId !== ''
                 && ! hash_equals($expectedSessionId, $receivedSessionId)) {
-                \Illuminate\Support\Facades\Log::critical('Payment session id mismatch — refusé', [
+                Log::critical('Payment session id mismatch — refusé', [
                     'order' => $order->reference,
                     'expected_session_id' => $expectedSessionId,
                     'received_session_id' => $receivedSessionId,

@@ -10,6 +10,7 @@ use App\DataObjects\PaymentVerification;
 use App\DataObjects\WebhookPayload;
 use App\Enums\PaymentStatus;
 use App\Models\Order;
+use App\Models\Payment;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
@@ -40,6 +41,7 @@ class WaveGateway implements PaymentGateway
      *  - 30 secondes dans le futur (dérive d'horloge raisonnable)
      */
     private const WEBHOOK_PAST_TOLERANCE = 300;
+
     private const WEBHOOK_FUTURE_TOLERANCE = 30;
 
     public function __construct(
@@ -173,7 +175,7 @@ class WaveGateway implements PaymentGateway
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     private function normaliseSessionToVerification(string $reference, array $data): PaymentVerification
     {
@@ -196,7 +198,7 @@ class WaveGateway implements PaymentGateway
      * Normalise la réponse/payload Wave vers la structure attendue par
      * CheckoutService (montant déjà recalculé en centimes, customer_code, etc.).
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     private function normaliseSessionData(array $data): array
@@ -298,7 +300,7 @@ class WaveGateway implements PaymentGateway
      */
     private function resolveSessionId(string $reference): string
     {
-        $payment = \App\Models\Payment::where('provider_reference', $reference)
+        $payment = Payment::where('provider_reference', $reference)
             ->where('provider', $this->providerCode())
             ->latest('id')
             ->first();

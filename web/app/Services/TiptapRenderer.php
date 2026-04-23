@@ -16,7 +16,7 @@ namespace App\Services;
 final class TiptapRenderer
 {
     /**
-     * @param array<string, mixed>|null $doc
+     * @param  array<string, mixed>|null  $doc
      */
     public function toHtml(?array $doc): string
     {
@@ -37,7 +37,7 @@ final class TiptapRenderer
     }
 
     /**
-     * @param array<int, array<string, mixed>> $blocks
+     * @param  array<int, array<string, mixed>>  $blocks
      * @return array<string, mixed>
      */
     private function migrateLegacyToTiptap(array $blocks): array
@@ -87,7 +87,7 @@ final class TiptapRenderer
     }
 
     /**
-     * @param array<int, array<string, mixed>> $nodes
+     * @param  array<int, array<string, mixed>>  $nodes
      */
     private function renderChildren(array $nodes): string
     {
@@ -100,7 +100,7 @@ final class TiptapRenderer
     }
 
     /**
-     * @param array<string, mixed> $node
+     * @param  array<string, mixed>  $node
      */
     private function renderNode(array $node): string
     {
@@ -124,7 +124,7 @@ final class TiptapRenderer
     }
 
     /**
-     * @param array<string, mixed> $node
+     * @param  array<string, mixed>  $node
      */
     private function renderHeading(array $node): string
     {
@@ -136,7 +136,7 @@ final class TiptapRenderer
     }
 
     /**
-     * @param array<string, mixed> $node
+     * @param  array<string, mixed>  $node
      */
     private function renderText(array $node): string
     {
@@ -159,7 +159,7 @@ final class TiptapRenderer
     }
 
     /**
-     * @param array<string, mixed> $attrs
+     * @param  array<string, mixed>  $attrs
      */
     private function wrapLink(string $text, array $attrs): string
     {
@@ -177,7 +177,7 @@ final class TiptapRenderer
     }
 
     /**
-     * @param array<string, mixed> $node
+     * @param  array<string, mixed>  $node
      */
     private function renderImage(array $node): string
     {
@@ -206,7 +206,7 @@ final class TiptapRenderer
     }
 
     /**
-     * @param array<string, mixed> $node
+     * @param  array<string, mixed>  $node
      */
     private function renderYoutube(array $node): string
     {

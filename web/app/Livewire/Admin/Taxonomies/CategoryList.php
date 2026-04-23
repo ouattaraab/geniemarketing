@@ -26,13 +26,21 @@ class CategoryList extends Component
 
     // État modal create/edit
     public bool $showModal = false;
+
     public ?int $editingId = null;
+
     public string $name = '';
+
     public string $slug = '';
+
     public string $description = '';
+
     public string $colorHex = '';
+
     public ?int $parentId = null;
+
     public int $position = 0;
+
     public bool $isActive = true;
 
     public function openCreate(?int $parentId = null): void
@@ -115,10 +123,12 @@ class CategoryList extends Component
 
         if ($cat->children_count > 0) {
             session()->flash('status', 'Impossible : cette rubrique contient des sous-rubriques.');
+
             return;
         }
         if ($cat->articles_count > 0) {
             session()->flash('status', 'Impossible : cette rubrique contient '.$cat->articles_count.' article(s).');
+
             return;
         }
 

@@ -7,7 +7,7 @@ namespace App\DataObjects;
 final readonly class WebhookPayload
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function __construct(
         public string $event,           // charge.success, subscription.create, invoice.create...

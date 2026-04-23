@@ -111,7 +111,7 @@ it('refuse finalizeOrder si le montant retourné ne matche pas la commande (C3 a
         'amount' => 1, // tampering — 1 centime au lieu du prix réel
         'currency' => $order->currency,
     ]);
-})->throws(\RuntimeException::class, 'Montant ou devise');
+})->throws(RuntimeException::class, 'Montant ou devise');
 
 it('refuse finalizeOrder si la devise ne matche pas (C3 audit)', function (): void {
     $order = $this->service->createOrderForPlan($this->user, $this->plan);
@@ -122,7 +122,7 @@ it('refuse finalizeOrder si la devise ne matche pas (C3 audit)', function (): vo
         'amount' => $order->total_cents,
         'currency' => 'USD', // tampering de devise
     ]);
-})->throws(\RuntimeException::class, 'Montant ou devise');
+})->throws(RuntimeException::class, 'Montant ou devise');
 
 it('refuse finalizeOrder si le session id gateway ne matche pas celui persisté à l\'init (H1 audit)', function (): void {
     $order = $this->service->createOrderForPlan($this->user, $this->plan, 'wave');
@@ -138,7 +138,7 @@ it('refuse finalizeOrder si le session id gateway ne matche pas celui persisté 
         'amount' => $order->total_cents,
         'currency' => $order->currency,
     ], 'wave');
-})->throws(\RuntimeException::class, 'Session id du gateway incohérent');
+})->throws(RuntimeException::class, 'Session id du gateway incohérent');
 
 it('markFailed bascule Order + Payment en failed sur tentative non payée', function (): void {
     $order = $this->service->createOrderForPlan($this->user, $this->plan);

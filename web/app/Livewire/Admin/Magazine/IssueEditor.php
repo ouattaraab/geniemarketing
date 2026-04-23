@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace App\Livewire\Admin\Magazine;
 
 use App\Models\MagazineIssue;
-use App\Models\Media;
 use App\Services\MediaManager;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -25,17 +23,27 @@ class IssueEditor extends Component
     public ?MagazineIssue $issue = null;
 
     public int $number = 1;
+
     public string $title = '';
+
     public string $theme = '';
+
     public string $slug = '';
+
     public string $publicationDate = '';
+
     public ?int $pricePaper = null;
+
     public ?int $pricePdf = null;
+
     public int $stockPaper = 0;
+
     public string $status = 'draft';
 
     public ?int $coverMediaId = null;
+
     public ?TemporaryUploadedFile $coverUpload = null;
+
     public string $coverAlt = '';
 
     public ?TemporaryUploadedFile $pdfUpload = null;

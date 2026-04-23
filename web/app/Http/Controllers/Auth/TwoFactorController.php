@@ -10,6 +10,7 @@ use App\Services\TwoFactorAuth;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\ValidationException;
 
 class TwoFactorController extends Controller
@@ -31,7 +32,7 @@ class TwoFactorController extends Controller
             $secret = $this->service->generateSecret($user);
             $user->refresh();
         } else {
-            $secret = \Illuminate\Support\Facades\Crypt::decryptString($user->{'2fa_secret'});
+            $secret = Crypt::decryptString($user->{'2fa_secret'});
         }
 
         return view('auth.2fa.setup', [

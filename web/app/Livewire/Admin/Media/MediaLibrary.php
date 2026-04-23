@@ -35,8 +35,11 @@ class MediaLibrary extends Component
     public array $uploads = [];
 
     public ?int $editingMediaId = null;
+
     public string $editAlt = '';
+
     public string $editCaption = '';
+
     public string $editCredit = '';
 
     public function mount(): void

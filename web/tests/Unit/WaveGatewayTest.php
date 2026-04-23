@@ -10,7 +10,6 @@ use App\Services\Payment\WaveGateway;
  * Les cas qui touchent la BDD (init HTTP + Payment, verify) sont dans
  * tests/Feature/WaveGatewayTest.php.
  */
-
 function makeWaveGateway(string $secret = 'whsec_test_wave', string $api = 'wave_ci_test'): WaveGateway
 {
     return new WaveGateway(apiKey: $api, webhookSecret: $secret);

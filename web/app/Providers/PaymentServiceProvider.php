@@ -10,6 +10,7 @@ use App\Services\Payment\FakePaymentGateway;
 use App\Services\Payment\PaystackGateway;
 use App\Services\Payment\WaveGateway;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -73,7 +74,7 @@ class PaymentServiceProvider extends ServiceProvider
 
         // Pas de table payment_methods (avant migration) → fallback config uniquement.
         try {
-            $tableExists = \Illuminate\Support\Facades\Schema::hasTable('payment_methods');
+            $tableExists = Schema::hasTable('payment_methods');
         } catch (\Throwable) {
             $tableExists = false;
         }

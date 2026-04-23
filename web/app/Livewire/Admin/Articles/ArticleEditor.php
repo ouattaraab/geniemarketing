@@ -32,18 +32,28 @@ class ArticleEditor extends Component
 
     // Form fields
     public string $title = '';
+
     public string $slug = '';
+
     public string $lede = '';
 
     /** @var array<string, mixed>|null JSON ProseMirror émis par TipTap */
     public ?array $body = null;
+
     public ?int $categoryId = null;
+
     public ?int $editorialCategoryId = null;
+
     public string $status = 'draft';
+
     public string $accessLevel = 'subscriber';
+
     public ?string $metaTitle = null;
+
     public ?string $metaDescription = null;
+
     public ?int $readingTime = null;
+
     public ?string $scheduledAt = null;
 
     /** @var array<int> */
@@ -53,8 +63,11 @@ class ArticleEditor extends Component
     public array $selectedTagIds = [];
 
     public ?int $coverMediaId = null;
+
     public string $coverAlt = '';
+
     public string $coverCaption = '';
+
     public string $coverCredit = '';
 
     public ?TemporaryUploadedFile $coverUpload = null;

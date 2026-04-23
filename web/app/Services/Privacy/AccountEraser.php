@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\Audit;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /**
@@ -109,7 +110,7 @@ class AccountEraser
             DB::table('sessions')->where('user_id', $user->id)->delete();
             DB::table('password_reset_tokens')->where('email', $originalEmail)->delete();
             DB::table('access_rights')->where('user_id', $user->id)->delete();
-            if (\Illuminate\Support\Facades\Schema::hasTable('audit_logs')) {
+            if (Schema::hasTable('audit_logs')) {
                 DB::table('audit_logs')->where('user_id', $user->id)->update(['user_id' => null]);
             }
 

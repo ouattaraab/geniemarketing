@@ -132,7 +132,7 @@ class PaystackGateway implements PaymentGateway
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     private function normaliseTransactionToVerification(string $reference, array $data): PaymentVerification
     {

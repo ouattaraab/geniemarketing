@@ -8,7 +8,10 @@ use App\Contracts\PaymentGateway;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Consent;
+use App\Models\Newsletter;
+use App\Models\NewsletterSubscription;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\PromoCode;
 use App\Models\Setting;
 use App\Models\SubscriptionPlan;
@@ -118,6 +121,7 @@ class CheckoutController extends Controller
             $promo = PromoCode::where('code', $data['promo_code'])->first();
             if ($promo !== null && ! $promo->isUsable($plan->code)) {
                 $promo = null;
+
                 return back()
                     ->withInput()
                     ->withErrors(['promo_code' => 'Ce code promo n\'est pas valide pour cette formule.']);
@@ -178,7 +182,7 @@ class CheckoutController extends Controller
         // callback verify. Sans lien session↔reference, un retry utilisateur
         // bloquerait la vérification Wave.
         if ($init->accessCode !== null && $init->accessCode !== '') {
-            \App\Models\Payment::where('order_id', $order->id)
+            Payment::where('order_id', $order->id)
                 ->where('provider_reference', $order->reference)
                 ->where('provider', $this->gateway->providerCode())
                 ->latest('id')
@@ -256,12 +260,12 @@ class CheckoutController extends Controller
 
     private function subscribeToDefaultNewsletter(User $user, ?string $ip): void
     {
-        $list = \App\Models\Newsletter::active()->where('is_default', true)->first();
+        $list = Newsletter::active()->where('is_default', true)->first();
         if ($list === null) {
             return;
         }
 
-        \App\Models\NewsletterSubscription::firstOrCreate(
+        NewsletterSubscription::firstOrCreate(
             ['newsletter_id' => $list->id, 'email' => $user->email],
             [
                 'user_id' => $user->id,

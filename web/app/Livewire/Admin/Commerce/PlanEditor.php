@@ -19,16 +19,27 @@ class PlanEditor extends Component
     public ?int $planId = null;
 
     public string $code = '';
+
     public string $name = '';
+
     public string $description = '';
+
     public int $price = 0;              // en unité principale (ex. 24000 XOF)
+
     public string $currency = 'XOF';
+
     public int $duration_months = 12;
+
     public int $trial_days = 0;
+
     public int $licenses_included = 1;
+
     public string $featuresText = '';   // une feature par ligne
+
     public bool $is_active = true;
+
     public bool $is_featured = false;
+
     public int $position = 0;
 
     public function mount(?SubscriptionPlan $plan = null): void

@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Http;
  * Tests Feature couvrant initialize (call HTTP Wave) et verify (call HTTP
  * + résolution du session id depuis la BDD).
  */
-
 beforeEach(function (): void {
     $this->plan = SubscriptionPlan::create([
         'code' => 'digital-wave-it',

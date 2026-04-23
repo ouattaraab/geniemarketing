@@ -8,7 +8,6 @@ use App\Models\Consent;
  * Couverture unitaire du modèle Consent : tronquage des user-agents trop longs,
  * libellés humains, valeurs par défaut.
  */
-
 it('truncates the user-agent field to 500 chars (DB column size)', function (): void {
     $longUa = str_repeat('A', 800);
 
