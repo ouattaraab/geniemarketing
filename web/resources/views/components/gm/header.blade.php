@@ -26,7 +26,39 @@
                 </svg>
             </a>
             @auth
-                <a href="{{ route('account') }}" class="gm-meta hover:text-gm-red">Mon compte</a>
+                <div class="relative" x-data="{ open: false }">
+                    <button type="button"
+                            @click="open = !open"
+                            @click.outside="open = false"
+                            @keydown.escape.window="open = false"
+                            class="gm-meta inline-flex items-center gap-1 hover:text-gm-red"
+                            :aria-expanded="open"
+                            aria-haspopup="true">
+                        Mon compte
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.4a.75.75 0 01-1.08 0l-4.25-4.4a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <div x-show="open" x-cloak
+                         x-transition.opacity.duration.100ms
+                         class="absolute right-0 top-full z-50 mt-2 w-56 border border-gm-gray-line bg-white shadow-lg">
+                        <a href="{{ route('account') }}"
+                           class="block border-b border-gm-gray-line px-4 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-gm-charcoal hover:bg-gm-paper hover:text-gm-red">
+                            Mon abonnement
+                        </a>
+                        <a href="{{ route('profile.edit') }}"
+                           class="block border-b border-gm-gray-line px-4 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-gm-charcoal hover:bg-gm-paper hover:text-gm-red">
+                            Mon profil
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}" class="block">
+                            @csrf
+                            <button type="submit"
+                                    class="block w-full text-left px-4 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-gm-red hover:bg-gm-red-soft">
+                                Se déconnecter
+                            </button>
+                        </form>
+                    </div>
+                </div>
             @else
                 <a href="{{ route('login') }}" class="gm-meta hover:text-gm-red">Se connecter</a>
             @endauth

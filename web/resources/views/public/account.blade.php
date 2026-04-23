@@ -123,5 +123,19 @@
                 </a>
             </div>
         </div>
+
+        {{-- Session --}}
+        <div class="mt-12 border-t border-gm-gray-line pt-8">
+            <form method="POST" action="{{ route('logout') }}" class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+                @csrf
+                <p class="gm-meta normal-case tracking-normal">
+                    Connecté en tant que <strong class="text-gm-ink">{{ $user->email }}</strong>
+                </p>
+                <button type="submit"
+                        class="border border-gm-red px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-gm-red hover:bg-gm-red hover:text-white transition-colors">
+                    Se déconnecter
+                </button>
+            </form>
+        </div>
     </section>
 </x-layouts.public>
