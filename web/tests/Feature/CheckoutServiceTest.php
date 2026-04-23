@@ -42,7 +42,7 @@ it('crée une Order en pending + un Payment en pending', function (): void {
     expect($order->total_cents)->toBe(24_000 * 100);
     expect($order->currency)->toBe('XOF');
     expect($order->latestPayment->status)->toBe(PaymentStatus::Pending);
-    expect($order->latestPayment->provider)->toBe('paystack');
+    expect($order->latestPayment->provider)->toBe('wave');
     expect($order->reference)->toStartWith('GM-');
 });
 

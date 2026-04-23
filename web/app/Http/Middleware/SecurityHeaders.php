@@ -54,15 +54,17 @@ class SecurityHeaders
         // Passer à "Content-Security-Policy" (sans -Report-Only) une fois validé.
         $csp = implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://esm.sh",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://esm.sh",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net",
             "img-src 'self' data: https:",
             "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net data:",
-            "connect-src 'self' https://api.paystack.co",
+            "connect-src 'self' https://api.wave.com",
             "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
             "frame-ancestors 'self'",
             "base-uri 'self'",
-            "form-action 'self' https://checkout.paystack.com",
+            // Wave redirige vers pay.wave.com pour le hosted checkout ; le flux
+            // reste POST→redirect 302, donc 'self' suffit côté form-action.
+            "form-action 'self' https://pay.wave.com",
             "object-src 'none'",
         ]);
         $response->headers->set('Content-Security-Policy-Report-Only', $csp);

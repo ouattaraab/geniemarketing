@@ -27,7 +27,7 @@ class CheckoutService
     /** Taux de TVA applicable en Côte d'Ivoire (0% pour les services numériques pour MVP — à affiner avec l'expert-comptable). */
     private const TAX_RATE_CENTS = 0;
 
-    public function createOrderForPlan(User $user, SubscriptionPlan $plan, ?string $provider = 'paystack'): Order
+    public function createOrderForPlan(User $user, SubscriptionPlan $plan, ?string $provider = 'wave'): Order
     {
         return DB::transaction(function () use ($user, $plan, $provider): Order {
             $reference = $this->uniqueReference();
@@ -64,7 +64,7 @@ class CheckoutService
             // Crée un payment en pending pour tracer la tentative
             Payment::create([
                 'order_id' => $order->id,
-                'provider' => $provider ?? 'paystack',
+                'provider' => $provider ?? 'wave',
                 'provider_reference' => $reference,
                 'status' => PaymentStatus::Pending,
                 'amount_cents' => $order->total_cents,
@@ -82,7 +82,7 @@ class CheckoutService
      *  - émet une Invoice
      * Idempotent : si déjà traité, retourne la subscription existante.
      */
-    public function finalizeOrder(Order $order, array $providerData, string $provider = 'paystack'): Subscription
+    public function finalizeOrder(Order $order, array $providerData, string $provider = 'wave'): Subscription
     {
         return DB::transaction(function () use ($order, $providerData, $provider): Subscription {
             // Verrou pessimiste : évite qu'un webhook et le callback
@@ -191,7 +191,7 @@ class CheckoutService
         });
     }
 
-    public function markFailed(Order $order, array $providerData, ?string $reason = null, string $provider = 'paystack'): void
+    public function markFailed(Order $order, array $providerData, ?string $reason = null, string $provider = 'wave'): void
     {
         DB::transaction(function () use ($order, $providerData, $reason, $provider): void {
             $order->refresh();

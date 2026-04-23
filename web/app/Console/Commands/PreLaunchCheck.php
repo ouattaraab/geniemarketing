@@ -84,10 +84,20 @@ class PreLaunchCheck extends Command
             fn () => Setting::count() >= 10,
             detail: Setting::count().' entrées', critical: false);
 
-        $this->check('Paystack configuré',
-            fn () => ! empty(config('services.paystack.secret'))
-                && ! str_starts_with((string) config('services.paystack.secret'), 'sk_test_placeholder'),
-            detail: str_starts_with((string) config('services.paystack.secret'), 'sk_live_') ? 'LIVE' : 'test/placeholder',
+        $this->check('Gateway de paiement configuré',
+            function (): bool {
+                $default = (string) config('services.payment.default', 'wave');
+                return match ($default) {
+                    'wave' => ! empty(config('services.wave.api_key'))
+                        && ! str_starts_with((string) config('services.wave.api_key'), 'wave_test_placeholder')
+                        && ! empty(config('services.wave.webhook_secret'))
+                        && ! str_starts_with((string) config('services.wave.webhook_secret'), 'wave_webhook_placeholder'),
+                    'paystack' => ! empty(config('services.paystack.secret'))
+                        && ! str_starts_with((string) config('services.paystack.secret'), 'sk_test_placeholder'),
+                    default => false,
+                };
+            },
+            detail: (string) config('services.payment.default', 'wave'),
             critical: true);
 
         $this->check('SMTP configuré (pas log)',

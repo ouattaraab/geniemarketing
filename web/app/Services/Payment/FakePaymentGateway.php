@@ -10,23 +10,28 @@ use App\DataObjects\PaymentVerification;
 use App\DataObjects\WebhookPayload;
 use App\Enums\PaymentStatus;
 use App\Models\Order;
-use App\Models\Payment;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Gateway factice pour développement local : simule Paystack en redirigeant
- * vers une page de simulation interne plutôt que vers le hosted checkout.
+ * Gateway factice pour développement local : simule un hosted checkout en
+ * redirigeant vers une page de simulation interne plutôt que vers le provider.
  *
- * Activé automatiquement quand `PAYSTACK_SECRET_KEY` commence par
- * `sk_test_placeholder` ou quand `PAYMENT_GATEWAY=fake`.
+ * Activé automatiquement quand la clé API du provider sélectionné est un
+ * placeholder ou quand `PAYMENT_GATEWAY=fake`. Paramètre son `providerCode()`
+ * pour que l'historique des paiements reflète le provider réel visé (wave,
+ * paystack, etc.).
  *
  * Ne doit JAMAIS être utilisé en production.
  */
 class FakePaymentGateway implements PaymentGateway
 {
+    public function __construct(
+        private readonly string $providerCode = 'wave',
+    ) {}
+
     public function providerCode(): string
     {
-        return 'fake';
+        return $this->providerCode;
     }
 
     public function initialize(Order $order, string $callbackUrl): PaymentInitialization
@@ -41,7 +46,7 @@ class FakePaymentGateway implements PaymentGateway
         return new PaymentInitialization(
             reference: $order->reference,
             authorizationUrl: $simulatorUrl,
-            accessCode: 'fake_access_'.substr(md5($order->reference), 0, 10),
+            accessCode: 'fake_session_'.substr(md5($order->reference), 0, 12),
         );
     }
 
@@ -63,7 +68,7 @@ class FakePaymentGateway implements PaymentGateway
             status: $status,
             amountCents: $order?->total_cents ?? 0,
             currency: $order?->currency ?? 'XOF',
-            channel: 'card',
+            channel: 'mobile_money',
             transactionId: 'fake_txn_'.time(),
             failureReason: $status === PaymentStatus::Success ? null : 'Simulé — '.$outcome,
             raw: [
@@ -72,9 +77,9 @@ class FakePaymentGateway implements PaymentGateway
                 'id' => 'fake_txn_'.time(),
                 'amount' => $order?->total_cents ?? 0,
                 'currency' => $order?->currency ?? 'XOF',
-                'channel' => 'card',
+                'channel' => 'mobile_money',
                 'customer' => [
-                    'customer_code' => 'CUS_fake_'.substr(md5($reference), 0, 10),
+                    'customer_code' => 'FAKE_'.substr(md5($reference), 0, 10),
                 ],
                 'gateway_response' => $outcome === 'success' ? 'Approved (simulated)' : 'Declined (simulated)',
             ],
