@@ -41,10 +41,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP 8.2
+      - name: Setup PHP 8.4
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
           extensions: mbstring, pdo, pdo_mysql, redis, bcmath, intl, gd
           coverage: none
           tools: composer:v2
@@ -109,4 +109,4 @@ jobs:
           DB_DATABASE: gm_test
           DB_USERNAME: root
           DB_PASSWORD: root
-        run: php artisan test
+        run: ./vendor/bin/pest --no-coverage
