@@ -101,7 +101,8 @@ class UserDataExporter
                 ->all(),
             'comments' => DB::table('comments')
                 ->where('user_id', $fresh->id)
-                ->get(['article_id', 'body', 'status', 'created_at'])
+                ->whereNull('deleted_at')
+                ->get(['article_id', 'content', 'status', 'created_at'])
                 ->map(fn ($row) => (array) $row)
                 ->values()
                 ->all(),
